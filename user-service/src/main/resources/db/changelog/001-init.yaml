@@ -1,0 +1,87 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-app-user
+      author: veeshal
+      changes:
+        - createTable:
+            tableName: app_user
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+                  constraints:
+                      unique: true
+                      nullable: false
+              - column:
+                  name: password
+                  type: VARCHAR(255)
+              - column:
+                  name: phone_number
+                  type: VARCHAR(255)
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: social_login
+                  type: smallint
+                  constraints:
+                    nullable: true
+
+  - changeSet:
+      id: 002-create-role
+      author: veeshal
+      changes:
+        - createTable:
+            tableName: role
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 003-create-app-user-roles
+      author: veeshal
+      changes:
+        - createTable:
+            tableName: app_user_roles
+            columns:
+              - column:
+                  name: app_user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: roles_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 004-add-foreign-keys
+      author: veeshal
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: abc
+            baseTableName: app_user_roles
+            baseColumnNames: roles_id
+            referencedTableName: role
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            constraintName: def
+            baseTableName: app_user_roles
+            baseColumnNames: app_user_id
+            referencedTableName: app_user
+            referencedColumnNames: id

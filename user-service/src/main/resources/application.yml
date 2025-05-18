@@ -1,0 +1,29 @@
+ecom:
+  google_client_id: ${GOOGLE_CLIENT_IDENTIFIER:000000000000-00000000000.apps.googleusercontent.com}
+  token_duration: ${TOKEN_DURATION_IN_SECONDS:86400}
+
+spring:
+  output:
+    ansi:
+      enabled: always
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:ecom-user}?useSSL=false&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:mysql}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  liquibase:
+    enabled: true
+    change-log: classpath:/db/master.yaml
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080
+          jwk-set-uri: http://localhost:8080/auth/.well-known/jwks.json
