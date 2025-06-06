@@ -1,0 +1,17 @@
+services:
+  user-database:
+    image: mysql:8.1.0
+    container_name: user-database
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql
+
+  mongo-database:
+    image: mongo:6.0.7
+    container_name: mongo-database
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password

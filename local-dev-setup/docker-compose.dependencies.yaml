@@ -1,0 +1,60 @@
+# Services for local development
+# ==========================================================
+# 1. Load Balancers
+# 2. API Gateway
+# 3. Microservices
+# 4. Databases (Relational and NoSQL)
+# 5. Message Broker
+# 6. Caching (Redis)
+# 7. Search & Analytics (Elasticsearch)
+
+
+# API Gateway
+# ===========================================================
+# Function: Entry point for clients. Routes requests to the right microservices,
+# handles rate limiting, and manages authentication.
+# Tool: Kong.
+#
+# Databases
+# ===========================================================
+# MYSQL for structured data
+# MongoDB for unstructured data
+#
+# Kafka
+# ===========================================================
+# Central message broker allowing asynchronous communication between microservices,
+# ensuring data consistency, and acting as an event store for critical actions.
+#
+#
+# Caching Redis
+# ===========================================================
+# Primarily by Cart Service for faster response times.
+#
+# Elasticsearch
+# ===========================================================
+# Used by Product Catalog for fast and relevant product searches.
+#
+
+services:
+  user-database:
+    image: mysql:8.1.0
+    container_name: user-database
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql
+
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.2
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+
+  app-vault:
+    image: hashicorp/vault:1.19.1
+    container_name: app-vault
+    environment:
+      - VAULT_DEV_ROOT_TOKEN_ID=token
+

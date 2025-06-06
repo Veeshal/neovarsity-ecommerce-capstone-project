@@ -1,0 +1,21 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "urlPathPattern": "/auth/.well-known/jwks.json"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "keys": [
+            {
+              "kty": "RSA",
+              "e": "AQAB",
+              "n": "k-8pTNAYQzZ1KgE0OY2QpYkbuSANFNSXH5lQ5Y9nqCkSegOSLZHZswiNGKPtsg1FJMaf3PGNSh8Btlo-Q2s67IHbADaeOUMvmX4Y04zRiRZpHyB9WsNvQnBIJxxjkr7WQBeXPTUYVFFKRZQ5KgEYWB-nquOYxRoUK9jWp2t48lsY4Qc-Er9msQ2pix9WE7O_yrALvicBJsLtjZu_8dk_PIbZmPVDH8uxMH6HuIVJWPFoiaBMSb7qO_wUVx17-ZkyYOPo7YPBHXbdG2feI3PcsArEs0hkzmR22VBeExKBx_HfOb1bL_XeOJGRwjJOm4qnwPp-bBQ3x7Njutn3Ky21o3bBkjgK-utSosOzNprVravE0Cplw0GC_f9ZrQEB7Xp7_ZA-wxeWSF-Y7Q-3bmFEVMtrWsWkKUC--dYHtavjY9BCBNTQ0P54nSoJPzSIarma_Qbx95qoB-n9Y2eVSVeDDJ7V1IshM2r-SDUr5Fl3Os0MLbf9Tcw_S_fXawT7qvnL"
+            }
+          ]
+        }
+      }
+    }]
+}

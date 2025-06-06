@@ -1,0 +1,7 @@
+services:
+  user-database:
+    ports:
+      - "3306:3306"
+  app-vault:
+    ports:
+      - "8200:8200"

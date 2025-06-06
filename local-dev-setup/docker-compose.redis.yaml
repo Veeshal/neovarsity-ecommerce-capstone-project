@@ -1,0 +1,18 @@
+services:
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - redis-net
+
+  redis-insight:
+    image: redislabs/redisinsight:latest
+    container_name: redis-insight
+    depends_on:
+      - redis
+    ports:
+      - "8001:8001"
+    networks:
+      - redis-net
