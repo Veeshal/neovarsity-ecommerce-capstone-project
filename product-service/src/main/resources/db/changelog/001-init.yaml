@@ -1,0 +1,161 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-category
+      author: veeshal
+      changes:
+        - createTable:
+            tableName: category
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 002-create-product
+      author: veeshal
+      changes:
+        - createTable:
+            tableName: product
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: VARCHAR(1000)
+              - column:
+                  name: category_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: price
+                  type: DOUBLE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: quantity
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_active
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATETIME
+              - column:
+                  name: updated_at
+                  type: DATETIME
+              - column:
+                  name: deleted_at
+                  type: DATETIME
+
+  - changeSet:
+      id: 003-create-specification
+      author: veeshal
+      changes:
+        - createTable:
+            tableName: specification
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: value
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: product_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 004-create-product-images
+      author: veeshal
+      changes:
+        - createTable:
+            tableName: product_images
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: image_url
+                  type: VARCHAR(1000)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: product_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 005-add-foreign-keys-product
+      author: veeshal
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_product_category
+            baseTableName: product
+            baseColumnNames: category_id
+            referencedTableName: category
+            referencedColumnNames: id
+
+  - changeSet:
+      id: 006-add-foreign-keys-specification
+      author: veeshal
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_specification_product
+            baseTableName: specification
+            baseColumnNames: product_id
+            referencedTableName: product
+            referencedColumnNames: id
+
+  - changeSet:
+      id: 007-add-foreign-keys-product-images
+      author: veeshal
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_product_images_product
+            baseTableName: product_images
+            baseColumnNames: product_id
+            referencedTableName: product
+            referencedColumnNames: id
+

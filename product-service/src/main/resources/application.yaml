@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: product-service
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:ecom-product}?useSSL=false&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:mysql}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  liquibase:
+    change-log: classpath:/db/master.yaml
+    enabled: true
+  jpa:
+    show-sql: true
+  output:
+    ansi:
+      enabled: always
+  elasticsearch:
+    uris: ${ELASTICSEARCH_URIS:http://localhost:9200}
+    username: ${ELASTICSEARCH_USERNAME:elastic}
+    password: ${ELASTICSEARCH_PASSWORD:password}
+kafka:
+  topic:
+    order-completed: order.completed
+#logging:
+#  level:
+#    org.springframework: DEBUG
