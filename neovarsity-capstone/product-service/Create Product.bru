@@ -1,0 +1,41 @@
+meta {
+  name: Create Product
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base-url}}/product
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "id": null,
+    "name": "iPhone 15 Pro",
+    "description": "Latest Apple iPhone with advanced features",
+    "thumbnail": "https://example.com/images/iphone15pro-thumb.jpg",
+    "images": [
+      "https://example.com/images/iphone15pro-1.jpg",
+      "https://example.com/images/iphone15pro-2.jpg"
+    ],
+    "price": 1299.99,
+    "quantity": 50,
+    "categoryId": null,
+    "categoryName": "Smartphones",
+    "specifications": [
+      {
+        "name": "Color",
+        "value": "Silver"
+      },
+      {
+        "name": "Storage",
+        "value": "256GB"
+      }
+    ],
+    "isActive": true,
+    "createdAt": null,
+    "updatedAt": null
+  }
+}

@@ -1,0 +1,15 @@
+meta {
+  name: Search Product
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{base-url}}/product?search=iphooe
+  body: none
+  auth: inherit
+}
+
+params:query {
+  search: iphooe
+}
