@@ -58,10 +58,21 @@ public class AppUserService implements UserDetailsService {
 
     @Transactional
     public AppUser registerUser(AppUser newUser) {
-        var user = appUserRepository.findByEmail(newUser.getEmail());
+        var userOpt = appUserRepository.findByEmail(newUser.getEmail());
 
-        if (user.isPresent()) {
-            throw new IllegalArgumentException("User already exists with email: " + newUser.getEmail());
+        if (userOpt.isPresent()) {
+            AppUser existingUser = userOpt.get();
+            // Only allow login if the social provider matches
+            if (existingUser.getSocialLogin() != null && existingUser.getSocialLogin().equals(newUser.getSocialLogin())) {
+                // Optionally update name if changed
+                if (!existingUser.getName().equals(newUser.getName())) {
+                    existingUser.setName(newUser.getName());
+                    appUserRepository.save(existingUser);
+                }
+                return existingUser;
+            } else {
+                throw new IllegalArgumentException("User already exists with this email using a different login method.");
+            }
         }
 
         appUserRepository.save(newUser);

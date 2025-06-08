@@ -38,6 +38,7 @@ public class AuthService {
         // TODO: Improve security.
         SocialLoginStrategy strategy = socialLoginStrategies.get(provider.toLowerCase());
         if (strategy == null) {
+            log.warn("Attempted social login with unsupported provider: {}", provider);
             throw new IllegalArgumentException("Unsupported social provider: " + provider);
         }
         AppUser newUser = strategy.login(token);
