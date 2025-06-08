@@ -43,10 +43,9 @@ public class AuthController {
         return new AppUserDto(user.getUsername(), user.getEmail());
     }
 
-    @PostMapping("google/register")
-    public LoginResponse register(@RequestBody final GoogleRegisterRequest request) {
-        String token = authService.loginWithGoogle(request.token());
-
+    @PostMapping("social/login")
+    public LoginResponse registerWithSocial(@RequestBody final SocialLoginRequest request) {
+        String token = authService.loginWithSocial(request.provider(), request.token());
         return new LoginResponse(token);
     }
 
