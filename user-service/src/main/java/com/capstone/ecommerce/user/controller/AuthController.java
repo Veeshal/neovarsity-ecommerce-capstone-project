@@ -7,8 +7,10 @@ import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -17,6 +19,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("auth")
+@Validated
 public class AuthController {
 
     private final AuthService authService;
@@ -44,7 +47,7 @@ public class AuthController {
     }
 
     @PostMapping("social/login")
-    public LoginResponse registerWithSocial(@RequestBody final SocialLoginRequest request) {
+    public LoginResponse registerWithSocial(@Valid @RequestBody final SocialLoginRequest request) {
         String token = authService.loginWithSocial(request.provider(), request.token());
         return new LoginResponse(token);
     }
