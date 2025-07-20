@@ -7,6 +7,10 @@ plugins {
 group = 'com.capstone.ecommerce.product'
 version = '0.0.1-SNAPSHOT'
 
+bootJar {
+    archiveFileName = 'app.jar'
+}
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
@@ -35,6 +39,7 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'com.mysql:mysql-connector-j'
+    runtimeOnly 'org.postgresql:postgresql'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
@@ -43,4 +48,20 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+//bootBuildImage {
+//    imageName = "ghcr.io/veeshal/neovarsity-product-service:latest"
+//    builder = "paketobuildpacks/builder-jammy-java-tiny:latest"
+//    publish = true
+//    environment = [
+//            "BP_JVM_VERSION": "21"
+//    ]
+//}
+
+tasks.register('dockerBuild', Exec) {
+    group = 'docker'
+    description = 'Builds the Docker image for the product-service'
+    commandLine 'docker', 'build', '-t', "ghcr.io/veeshal/neovarsity-product-service:${version}", '.'
+    dependsOn build
 }
