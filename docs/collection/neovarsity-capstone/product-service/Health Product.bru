@@ -1,0 +1,11 @@
+meta {
+  name: Health Product
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{base-url}}{{context}}/actuator/health
+  body: none
+  auth: inherit
+}

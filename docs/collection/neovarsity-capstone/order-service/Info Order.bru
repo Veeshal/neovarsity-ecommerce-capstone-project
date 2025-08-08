@@ -1,0 +1,11 @@
+meta {
+  name: Info Order
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{base-url}}{{context}}/actuator
+  body: none
+  auth: inherit
+}
