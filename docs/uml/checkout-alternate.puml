@@ -1,0 +1,28 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+'autonumber
+
+
+Frontend -> Order: checkout(\n\taddress,\n\tpaymentMethod\n)
+Order -> Cart: getCart()
+alt empty cart
+    Cart --> Order: error("Cart empty")
+    Order --> Frontend: error("Cart empty")
+else cart found
+    Cart --> Order: cartItems[]
+end
+Order -> Product: validateStock(\n\tcartItems\n)
+alt stock available
+    Product --> Order: stockAvailable
+else stock not available
+    Product --> Order: stockNotAvailable
+    Order --> Cart: error("Out of stock")
+    Cart --> Frontend: error("Out of stock")
+end
+
+Order -> Payment: generatePaymentLink(\n\torderId,\n\tfinalAmount,\n\tpaymentMethod\n)
+Payment --> Order: paymentLink
+Order -> Order: generateOrder(\n\tpaymentLink,\n\tPaymentStatus.Pending\n)
+Order --> Frontend: paymentLink, orderId
+@enduml

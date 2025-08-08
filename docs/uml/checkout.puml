@@ -1,0 +1,28 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+
+Frontend -> Cart: checkout(\n\taddress,\n\tpaymentMethod\n)
+
+Cart -> Order: createOrder(\n\taddress,\n\tpaymentMethod,\n\tcartItems\n)
+
+Order -> Product: validateStock(\n\tcartItems\n)
+alt stock not available
+    Product --> Order: stockNotAvailable
+    Order --> Cart: error("Out of stock")
+    Cart --> Frontend: error("Out of stock")
+end
+
+Order -> Payment: generatePaymentLink(\n\torderId,\n\tfinalAmount,\n\tpaymentMethod\n)
+alt failed payment link generation
+    Payment --> Order: error("Payment link generation failed")
+    Order --> Cart: error("Payment link generation failed")
+    Cart --> Frontend: error("Payment link generation failed")
+end
+
+Payment --> Order: paymentLink
+Order -> Order: generateOrder(\n\tpaymentLink,\n\taddress,\n\tPaymentStatus.Pending,\n\tamount\n)
+Order --> Cart: orderDetails
+Cart --> Frontend: paymentLink, orderId
+
+@enduml
