@@ -5,34 +5,34 @@ services:
     routes:
       - name: user-route
         paths:
-          - /user
+          - /user-service
   - name: product-service
     url: http://host.docker.internal:8082
     routes:
       - name: product-route
         paths:
-          - /product
+          - /product-service
   - name: order-service
     url: http://host.docker.internal:8083
     routes:
       - name: order-route
         paths:
-          - /order
+          - /order-service
   - name: payment-service
     url: http://host.docker.internal:8084
     routes:
       - name: payment-route
         paths:
-          - /payment
+          - /payment-service
   - name: cart-service
     url: http://host.docker.internal:8085
     routes:
       - name: cart-route
         paths:
-          - /cart
+          - /cart-service
   - name: notification-service
     url: http://host.docker.internal:8086
     routes:
       - name: notification-route
         paths:
-          - /notification
+          - /notification-service
