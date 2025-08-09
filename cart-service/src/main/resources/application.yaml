@@ -1,5 +1,10 @@
 server:
-    servlet:
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-exception: true
+  shutdown: graceful
+  servlet:
         context-path: /api
 spring:
   application:
