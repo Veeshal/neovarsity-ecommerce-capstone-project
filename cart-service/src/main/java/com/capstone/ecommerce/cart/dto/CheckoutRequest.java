@@ -1,4 +1,9 @@
 package com.capstone.ecommerce.cart.dto;
 
-public record CheckoutRequest(Long userId, Long addressId, Long paymentMethodId) {
+import jakarta.validation.constraints.NotNull;
+
+public record CheckoutRequest(
+        @NotNull Long userId,
+        @NotNull Long addressId,
+        @NotNull int paymentMethodId) {
 }

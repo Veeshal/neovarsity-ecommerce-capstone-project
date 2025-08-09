@@ -4,6 +4,6 @@ public record CheckoutInfo(
         String orderId,
         Long userId,
         Long addressId,
-        Long paymentMethodId,
+        int paymentMethodId,
         String paymentLink
 ) {}

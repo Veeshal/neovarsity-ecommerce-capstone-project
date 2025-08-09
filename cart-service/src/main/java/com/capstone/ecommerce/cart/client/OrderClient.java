@@ -1,18 +1,31 @@
 package com.capstone.ecommerce.cart.client;
 
+import com.capstone.ecommerce.cart.dto.OrderCreationRequestDto;
+import com.capstone.ecommerce.cart.entity.Cart;
 import com.capstone.ecommerce.cart.entity.Order;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
-import java.math.BigDecimal;
-import java.util.UUID;
-
+@RequiredArgsConstructor
 @Component
 public class OrderClient {
-    // TODO: Implement methods to interact with the Order Service
 
-    public Order createOrder(Long userId, Long addressId, Long paymentMethodId) {
+    @Value("${ecom.client.order-service.url}")
+    private String orderServiceBaseUrl;
 
-        return new Order(UUID.randomUUID().toString(), userId, addressId, BigDecimal.ZERO); // TODO: Replace null with actual total amount if available
+    private final RestTemplate restTemplate;
+
+    public Order createOrder(Long userId, Long addressId, int paymentMethodId, Cart cart) {
+
+        var request = new OrderCreationRequestDto(userId, addressId, paymentMethodId, cart);
+        try {
+            var response = restTemplate.postForEntity(orderServiceBaseUrl + "/api/v1/order", request, Order.class);
+            return response.getBody();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create order: " + e.getMessage(), e);
+        }
     }
 
 }

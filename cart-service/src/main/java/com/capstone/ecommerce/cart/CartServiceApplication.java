@@ -4,7 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 
-@EnableCaching
+// TODO: Listen to order placed events to clear cart cache.
+
 @SpringBootApplication
 public class CartServiceApplication {
     public static void main(String[] args) {
