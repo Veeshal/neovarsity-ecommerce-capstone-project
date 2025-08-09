@@ -1,0 +1,19 @@
+meta {
+  name: Create Order
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base-url}}{{context}}/api/v1/order
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "userId": 1,
+    "addressId": 1,
+    "paymentMethodId": 1
+  }
+}
