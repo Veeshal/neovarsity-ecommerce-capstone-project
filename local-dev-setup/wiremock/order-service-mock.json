@@ -1,3 +1,53 @@
 {
-  "mappings": []
+  "mappings": [{
+      "request": {
+          "method": "POST",
+          "url": "/api/v1/order",
+          "bodyPatterns": [
+              { "matchesJsonPath": "$.userId" },
+              { "matchesJsonPath": "$.addressId" },
+              { "matchesJsonPath": "$.paymentMethodId" }
+          ]
+      },
+      "response": {
+          "status": 200,
+          "transformers": ["response-template"],
+          "jsonBody": {
+              "orderId": "00001",
+              "orderStatus": 1,
+              "userId": "{{jsonPath request.body '$.userId'}}",
+              "addressId": "{{jsonPath request.body '$.addressId'}}",
+              "totalAmount": "50000",
+              "paymentLink": "http://example.com/payment/00001"
+          },
+          "headers": {
+              "Content-Type": "application/json"
+          }
+      }
+  },
+  {
+    "request": {
+      "method": "POST",
+      "url": "/api/v1/order",
+      "bodyPatterns": [
+        { "matchesJsonPath": "$.userId", "equalTo": "2" },
+        { "matchesJsonPath": "$.addressId" },
+        { "matchesJsonPath": "$.paymentMethodId" }
+      ]
+    },
+    "response": {
+      "status": 400,
+      "transformers": ["response-template"],
+      "jsonBody": {
+        "timestamp": "{{now}}",
+        "status": 400,
+        "error": "Bad Request",
+        "message": "Invalid user ID or user not authorized",
+        "path": "/api/v1/order"
+      },
+      "headers": {
+        "Content-Type": "application/json"
+      }
+    }
+  }]
 }

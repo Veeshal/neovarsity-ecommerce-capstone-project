@@ -1,3 +1,97 @@
 {
-  "mappings": []
+  "mappings": [
+    {
+      "request": {
+        "method": "POST",
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": 1,
+          "userId": "{{jsonPath request.body '$.userId'}}",
+          "items": [
+            {
+              "productId": "{{jsonPath request.body '$.productId'}}",
+              "quantity": "{{jsonPath request.body '$.quantity'}}",
+              "price": 999.99,
+              "name": "Sample Product"
+            }
+          ],
+          "totalAmount": 999.99,
+          "status": "ACTIVE"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "url": "/",
+        "queryParameters": {
+          "userId": {
+            "matches": "[0-9]+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": 1,
+          "userId": "{{request.query.userId}}",
+          "items": [
+            {
+              "productId": 1,
+              "quantity": 2,
+              "price": 999.99,
+              "name": "iPhone 14 Pro"
+            },
+            {
+              "productId": 2,
+              "quantity": 1,
+              "price": 899.99,
+              "name": "Samsung Galaxy S23"
+            }
+          ],
+          "totalAmount": 2899.97,
+          "status": "ACTIVE"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "url": "/checkout"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "orderId": "ORD-123456",
+          "orderStatus": "CREATED",
+          "orderAmount": 2899.97,
+          "paymentStatus": "PENDING",
+          "deliveryAddress": {
+            "id": "{{jsonPath request.body '$.addressId'}}",
+            "street": "123 Sample Street",
+            "city": "Sample City",
+            "state": "Sample State",
+            "zipCode": "12345"
+          },
+          "paymentMethod": {
+            "id": "{{jsonPath request.body '$.paymentMethodId'}}",
+            "type": "CREDIT_CARD",
+            "last4": "4242"
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }
+  ]
 }

@@ -1,3 +1,108 @@
 {
-  "mappings": []
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": [
+          {
+            "id": 1,
+            "name": "iPhone 14 Pro",
+            "description": "Latest iPhone with dynamic island",
+            "price": 999.99,
+            "category": "Electronics",
+            "inventory": 50,
+            "active": true
+          },
+          {
+            "id": 2,
+            "name": "Samsung Galaxy S23",
+            "description": "Android flagship phone",
+            "price": 899.99,
+            "category": "Electronics",
+            "inventory": 75,
+            "active": true
+          }
+        ],
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPattern": "/[0-9]+"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": 1,
+          "name": "iPhone 14 Pro",
+          "description": "Latest iPhone with dynamic island",
+          "price": 999.99,
+          "category": "Electronics",
+          "inventory": 50,
+          "active": true
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "url": "/"
+      },
+      "response": {
+        "status": 201,
+        "jsonBody": {
+          "id": 3,
+          "name": "{{jsonPath request.body '$.name'}}",
+          "description": "{{jsonPath request.body '$.description'}}",
+          "price": "{{jsonPath request.body '$.price'}}",
+          "category": "{{jsonPath request.body '$.category'}}",
+          "inventory": "{{jsonPath request.body '$.inventory'}}",
+          "active": true
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "PUT",
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "id": "{{jsonPath request.body '$.id'}}",
+          "name": "{{jsonPath request.body '$.name'}}",
+          "description": "{{jsonPath request.body '$.description'}}",
+          "price": "{{jsonPath request.body '$.price'}}",
+          "category": "{{jsonPath request.body '$.category'}}",
+          "inventory": "{{jsonPath request.body '$.inventory'}}",
+          "active": "{{jsonPath request.body '$.active'}}"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "DELETE",
+        "urlPattern": "/[0-9]+"
+      },
+      "response": {
+        "status": 204
+      }
+    }
+  ]
 }
