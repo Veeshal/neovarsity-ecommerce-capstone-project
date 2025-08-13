@@ -59,7 +59,7 @@
 #### Part 2
    * User adds a product to the cart.
    * Cart Service produces a message to Kafka about this action.
-#### Part 3
+#### Part 3 (Doubt)
    * User checks out, triggering the Order Management Service.
    * After placing the order, a message is sent to Kafka.
    * Payment Service consumes the Kafka message to process payment.
