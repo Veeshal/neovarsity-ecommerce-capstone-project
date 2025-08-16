@@ -18,7 +18,7 @@ public class MicrosoftLoginStrategy implements SocialLoginStrategy {
 
     @Override
     public AppUser login(String token) {
-        // Implement Microsoft login logic here
+        // TODO: Implement Microsoft login logic here
         throw new UnsupportedOperationException("Microsoft login not implemented yet");
     }
 }

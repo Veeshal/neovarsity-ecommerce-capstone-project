@@ -1,6 +1,8 @@
 package com.capstone.ecommerce.user.service;
 
 import com.capstone.ecommerce.user.entity.AppUser;
+import com.capstone.ecommerce.user.exceptions.UserDoesNotExistException;
+import com.capstone.ecommerce.user.exceptions.UsernamePasswordAuthenticationException;
 import com.capstone.ecommerce.user.strategy.SocialLoginStrategy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,11 +25,12 @@ public class AuthService {
     private final Map<String, SocialLoginStrategy> socialLoginStrategies;
     private final AppUserService appUserService;
 
-    public String login(String username, String password) {
-        AppUser user = (AppUser) userService.loadUserByUsername(username);
+    public String login(String email, String password) {
+        AppUser user = userService.getUserByEmail(email)
+                .orElseThrow(() -> new UserDoesNotExistException("User not found with email: " + email));
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new IllegalArgumentException("Invalid password");
+            throw new UsernamePasswordAuthenticationException("Invalid username or password");
         }
 
         return tokenService.generateToken(user);

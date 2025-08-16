@@ -34,11 +34,12 @@ public class JwtTokenService {
         // Create JWT claims
         JwtClaimsSet claimsSet = JwtClaimsSet.builder()
                 .issuer("http://localhost:8080")
-                .subject(user.getUsername())
+                .subject(user.getName())
                 .issuedAt(currentTime)
                 .expiresAt(currentTime.plus(tokenDuration, ChronoUnit.SECONDS))
                 .claim("role", "USER")
-                .claim("sample", "value")
+                .claim("email", user.getEmail())
+                .claim("name", user.getName())
                 .build();
 
 

@@ -21,13 +21,18 @@ public class AppSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry -> registry
                         .requestMatchers(
-                                "/auth/**",
+//                                "/v1/users/all", // TODO: Remove this endpoint in production
+                                "/.well-known/jwks.json",
+                                "/actuator/**",
+                                "/v1/auth/**",
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
                                 "/webjars/**",
-                                "/v3/api-docs/**"
+                                "/v3/api-docs/**",
+                                "/error"
                         ).permitAll()
-                        .anyRequest().authenticated());
+                        .anyRequest().authenticated()
+                );
 
         http.oauth2ResourceServer(oauth2 ->
                         oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder)));

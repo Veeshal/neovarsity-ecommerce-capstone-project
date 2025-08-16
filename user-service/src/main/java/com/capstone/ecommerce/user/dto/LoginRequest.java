@@ -1,4 +1,6 @@
 package com.capstone.ecommerce.user.dto;
 
-public record LoginRequest(String username, String password) {
+import jakarta.validation.constraints.NotBlank;
+
+public record LoginRequest(@NotBlank String email, @NotBlank String password) {
 }

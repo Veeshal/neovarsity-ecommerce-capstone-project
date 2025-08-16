@@ -4,6 +4,15 @@ ecom:
   microsoft.client_id: ${MICROSOFT_CLIENT_IDENTIFIER:000000000000-00000000000}
   token_duration: ${TOKEN_DURATION_IN_SECONDS:86400}
 
+server:
+    error:
+        include-message: always
+        include-binding-errors: always
+        include-exception: true
+    shutdown: graceful
+    servlet:
+        context-path: /api
+
 spring:
   output:
     ansi:
@@ -28,4 +37,28 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:8080
-          jwk-set-uri: http://localhost:8080/auth/.well-known/jwks.json
+#          jwk-set-uri: http://localhost:8000/user-service/api/.well-known/jwks.json
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  info:
+    env:
+      enabled: true
+    java:
+      enabled: true
+    os:
+      enabled: true
+    build:
+      enabled: true
+
+
+logging:
+  level:
+    org.hibernate.orm.connections.pooling: WARN
+    org.springframework.security: DEBUG

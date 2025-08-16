@@ -47,6 +47,7 @@ public class JwtConfig {
         // Override the default Nimbus claims set verifier as NimbusJwtDecoder handles it
         // instead
         jwtProcessor.setJWTClaimsSetVerifier((claims, context) -> {
+            // No-op, as NimbusJwtDecoder will handle claims verification
         });
         return new NimbusJwtDecoder(jwtProcessor);
     }

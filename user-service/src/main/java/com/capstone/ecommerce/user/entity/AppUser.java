@@ -18,6 +18,7 @@ public class AppUser extends BaseEntity implements UserDetails {
     private String phoneNumber;
 
     @Enumerated(EnumType.ORDINAL)
+    @Column(columnDefinition = "TINYINT")
     private SocialLogin socialLogin;
 
     @ManyToMany

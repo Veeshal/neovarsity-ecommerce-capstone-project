@@ -41,6 +41,10 @@ public class AppUserService implements UserDetailsService {
         return appUserRepository.findByEmail(email);
     }
 
+    public List<AppUser> getAllUsers() {
+        return appUserRepository.findAll();
+    }
+
     public AppUser registerUser(String email, String password, String name) {
         var user = getUserByEmail(email);
 
