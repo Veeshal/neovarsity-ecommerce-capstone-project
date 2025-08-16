@@ -20,17 +20,7 @@ public class AppSecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry -> registry
-                        .requestMatchers(
-//                                "/v1/users/all", // TODO: Remove this endpoint in production
-                                "/.well-known/jwks.json",
-                                "/actuator/**",
-                                "/v1/auth/**",
-                                "/swagger-ui.html",
-                                "/swagger-ui/**",
-                                "/webjars/**",
-                                "/v3/api-docs/**",
-                                "/error"
-                        ).permitAll()
+                        .requestMatchers(openEndpointPatterns()).permitAll()
                         .anyRequest().authenticated()
                 );
 
@@ -38,6 +28,22 @@ public class AppSecurityConfig {
                         oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder)));
 
         return http.build();
+    }
+
+    private String[] openEndpointPatterns() {
+        return new String[]{
+//                "/v1/users/all", // TODO: Remove this endpoint in production
+                "/.well-known/jwks.json",
+                "/actuator/**",
+                "/v1/auth/**",
+                "/v1/users/password-reset/request",
+                "/v1/users/password-reset/confirm",
+                "/swagger-ui.html",
+                "/swagger-ui/**",
+                "/webjars/**",
+                "/v3/api-docs/**",
+                "/error"
+        };
     }
 
 }

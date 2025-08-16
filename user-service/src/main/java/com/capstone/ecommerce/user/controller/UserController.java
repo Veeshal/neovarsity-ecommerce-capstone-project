@@ -2,17 +2,15 @@ package com.capstone.ecommerce.user.controller;
 
 import com.capstone.ecommerce.user.dto.AppUserDto;
 import com.capstone.ecommerce.user.dto.ListAppUserResponse;
+import com.capstone.ecommerce.user.dto.ResetPasswordConfirmRequest;
+import com.capstone.ecommerce.user.dto.ResetPasswordRequest;
 import com.capstone.ecommerce.user.exceptions.InvalidUserPrincipalException;
-import com.capstone.ecommerce.user.exceptions.UserDoesNotExistException;
 import com.capstone.ecommerce.user.service.AppUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -54,15 +52,14 @@ public class UserController {
 
 
     @PostMapping("password-reset/request")
-    public AppUserDto changePasswordRequest(@RequestBody AppUserDto appUserDto) {
-        // Logic to change user password
-        return null; // TODO: Replace with actual implementation
+    public void resetPasswordRequest(@RequestBody ResetPasswordRequest request) {
+        appUserService.passwordResetRequest(request.email());
     }
 
     @PostMapping("password-reset/confirm")
-    public AppUserDto changePasswordRequestConfirm(@RequestBody AppUserDto appUserDto) {
-        // Logic to change user password
-        return null; // TODO: Replace with actual implementation
+    public void resetPasswordRequestConfirm(@RequestBody ResetPasswordConfirmRequest request) {
+        appUserService.confirmPasswordReset(request.email(), request.passwordResetToken(),
+                request.newPassword(), request.confirmPassword());
     }
 
     @PostMapping("address")

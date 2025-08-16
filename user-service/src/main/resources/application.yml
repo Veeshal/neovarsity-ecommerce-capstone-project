@@ -38,6 +38,8 @@ spring:
         jwt:
           issuer-uri: http://localhost:8080
 #          jwk-set-uri: http://localhost:8000/user-service/api/.well-known/jwks.json
+  jackson:
+    default-property-inclusion: non_null
 
 management:
   endpoint:

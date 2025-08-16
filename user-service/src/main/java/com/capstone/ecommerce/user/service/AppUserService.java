@@ -1,16 +1,12 @@
 package com.capstone.ecommerce.user.service;
 
 import com.capstone.ecommerce.user.entity.AppUser;
-import com.capstone.ecommerce.user.entity.SocialLogin;
+import com.capstone.ecommerce.user.entity.PasswordResetToken;
+import com.capstone.ecommerce.user.entity.PasswordTokenStatus;
 import com.capstone.ecommerce.user.repository.AppUserRepository;
-import com.nimbusds.jose.JWSVerifier;
-import com.nimbusds.jose.crypto.RSASSAVerifier;
-import com.nimbusds.jose.jwk.JWK;
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jwt.SignedJWT;
+import com.capstone.ecommerce.user.repository.PasswordResetTokensRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,10 +14,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.net.URI;
-import java.security.interfaces.RSAPublicKey;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -30,6 +26,7 @@ public class AppUserService implements UserDetailsService {
 
     private final AppUserRepository appUserRepository;
     private final PasswordEncoder passwordEncoder;
+    private final PasswordResetTokensRepository passwordResetTokensRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -81,5 +78,77 @@ public class AppUserService implements UserDetailsService {
 
         appUserRepository.save(newUser);
         return newUser;
+    }
+
+    /**
+     * Logic to handle password reset request
+     * This could involve sending an email with a reset link
+     *
+     * @param email String email of the user requesting password reset
+     * @throws UsernameNotFoundException if the user with the given email does not exist
+     *
+     */
+    @Transactional
+    public void passwordResetRequest(String email) {
+        log.info("Password reset requested for user: {}", email);
+
+        AppUser user = appUserRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+
+        var passwordToken = passwordResetTokensRepository.findByUserAndStatus(user, PasswordTokenStatus.ACTIVE);
+
+        if (passwordToken.isPresent()) {
+            var token = passwordToken.get();
+            log.info("Password reset token already exists for user: {} which expiresAt: {}", email, token.getExpiresAt());
+
+            if (token.getExpiresAt().isAfter(LocalDateTime.now())) return;
+            else {
+                token.setStatus(PasswordTokenStatus.EXPIRED);
+                passwordResetTokensRepository.save(token);
+            }
+        }
+
+
+        var tokenValue = UUID.randomUUID().toString();
+
+        PasswordResetToken token = new PasswordResetToken();
+        token.setUser(user);
+        token.setToken(tokenValue);
+        token.setExpiresAt(LocalDateTime.now().plusMinutes(10)); // Token valid for 1 hour
+        token.setStatus(PasswordTokenStatus.ACTIVE);
+        passwordResetTokensRepository.save(token);
+
+        // use kafka to send event to notification service for sending email
+
+    }
+
+    @Transactional
+    public void confirmPasswordReset(String email, String tokenValue, String newPassword, String confirmPassword) {
+        if (!newPassword.equals(confirmPassword)) {
+            throw new IllegalArgumentException("New password and confirmation do not match");
+        }
+
+        log.info("Confirming password reset for user: {}", email);
+
+        AppUser user = appUserRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+
+        PasswordResetToken token = passwordResetTokensRepository.findByUserAndToken(user, tokenValue)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid password reset token"));
+
+        if (token.getStatus() != PasswordTokenStatus.ACTIVE) {
+            throw new IllegalArgumentException("Token is not active or has already been used");
+        }
+
+        if (token.getExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Token has expired");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        appUserRepository.save(user);
+
+        // Mark the token as consumed
+        token.setStatus(PasswordTokenStatus.CONSUMED);
+        passwordResetTokensRepository.save(token);
     }
 }
