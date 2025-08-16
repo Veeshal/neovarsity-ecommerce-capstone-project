@@ -5,14 +5,14 @@ meta {
 }
 
 post {
-  url: {{base-url}}/auth/login
+  url: {{base-url}}{{context}}/v1/auth/login
   body: json
   auth: none
 }
 
 body:json {
   {
-    "username": "vishal@abc.com",
+    "email": "vishal@abc.com",
     "password": "1234"
   }
 }

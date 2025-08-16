@@ -1,0 +1,19 @@
+meta {
+  name: Get Profile
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{base-url}}{{context}}/v1/users
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJWaXNoYWwiLCJyb2xlIjoiVVNFUiIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MCIsIm5hbWUiOiJWaXNoYWwiLCJleHAiOjE3NTU0Mzc1MDksImlhdCI6MTc1NTM1MTEwOSwiZW1haWwiOiJ2aXNoYWxAYWJjLmNvbSJ9.WnisW1TO_4nSQvd_lxrIiB585Ss74xOBHv7AS8CUnqsp2LZMirRK3iiHPVPqZpdD_aSaNT71KVVEAXOaZxsghn3IfN8-2BAhoGA0oijmIl-RMXUAkfQWfhf_yFC3ez3VlYi6BakDWCBjD6GnhkSYXTaPNwzB_zO6pl9XS30NregYC9hpBiQucDM2aAx3T4ODUYpmVpY3pSpmRS21jP7u3C_M7TgvFU7xn-WUQ58IQ9bUhvZpVLZEScoI8q7h5W6_y5epexZ8OLl5FWTqB_xwooTfqrcGGbH0DW-WdZUVPDmb2EpcipE6jQ3OUCsR-RnjqAprQLYur0QFr5hTjKtYiX1PI_koIYVtbXOl4aad8vSLCDsrhbQU7jEHpzOrUPFzAC_ZQMWr5R1L0lR9NO5tI2SwZZfqzhxcDxwTkXQcA3m7bHueSTv3zHi5TUJLY9cmjNSeF6dYnVIsFmGwzsNkhfV2yVv1IVNP0tKvFNsdSOTyWa-7JlLmOtFOqMYVXelr
+}
+
+settings {
+  encodeUrl: true
+}

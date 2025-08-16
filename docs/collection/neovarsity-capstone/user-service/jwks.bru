@@ -1,11 +1,11 @@
 meta {
   name: jwks
   type: http
-  seq: 3
+  seq: 1
 }
 
 get {
-  url: {{base-url}}/auth/.well-known/jwks.json
+  url: {{base-url}}{{context}}/.well-known/jwks.json
   body: none
   auth: inherit
 }
