@@ -2,6 +2,9 @@
 
 ## User Events
 - [ ] user-registered-topic
+- [x] password-reset-topic
+  * User Service emits this event when a user requests a password reset.
+  * Notification Service listens to this topic to send a password reset email.
 
 ## Cart Events
 - [ ] cart-item-added-topic

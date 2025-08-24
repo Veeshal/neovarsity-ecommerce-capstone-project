@@ -3,7 +3,9 @@ ecom:
   meta.client_id: ${META_CLIENT_IDENTIFIER:000000000000-00000000000}
   microsoft.client_id: ${MICROSOFT_CLIENT_IDENTIFIER:000000000000-00000000000}
   token_duration: ${TOKEN_DURATION_IN_SECONDS:86400}
-
+  kafka:
+    topics:
+      user-password-reset: password-reset-topic
 server:
     error:
         include-message: always
@@ -40,6 +42,10 @@ spring:
 #          jwk-set-uri: http://localhost:8000/user-service/api/.well-known/jwks.json
   jackson:
     default-property-inclusion: non_null
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    admin:
+      auto-create: true
 
 management:
   endpoint:

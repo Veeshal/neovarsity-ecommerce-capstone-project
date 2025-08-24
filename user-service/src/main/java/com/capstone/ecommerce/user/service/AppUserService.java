@@ -5,6 +5,7 @@ import com.capstone.ecommerce.user.entity.PasswordResetToken;
 import com.capstone.ecommerce.user.entity.PasswordTokenStatus;
 import com.capstone.ecommerce.user.repository.AppUserRepository;
 import com.capstone.ecommerce.user.repository.PasswordResetTokensRepository;
+import com.capstone.ecommerce.user.stream.producer.PasswordResetProducer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,6 +28,7 @@ public class AppUserService implements UserDetailsService {
     private final AppUserRepository appUserRepository;
     private final PasswordEncoder passwordEncoder;
     private final PasswordResetTokensRepository passwordResetTokensRepository;
+    private final PasswordResetProducer passwordResetProducer;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -101,8 +103,10 @@ public class AppUserService implements UserDetailsService {
             var token = passwordToken.get();
             log.info("Password reset token already exists for user: {} which expiresAt: {}", email, token.getExpiresAt());
 
-            if (token.getExpiresAt().isAfter(LocalDateTime.now())) return;
-            else {
+            if (token.getExpiresAt().isAfter(LocalDateTime.now())) {
+                log.info("Existing token is still valid. Not generating a new one.");
+                return;
+            } else {
                 token.setStatus(PasswordTokenStatus.EXPIRED);
                 passwordResetTokensRepository.save(token);
             }
@@ -119,6 +123,7 @@ public class AppUserService implements UserDetailsService {
         passwordResetTokensRepository.save(token);
 
         // use kafka to send event to notification service for sending email
+        passwordResetProducer.sendPasswordResetEvent(token);
 
     }
 
