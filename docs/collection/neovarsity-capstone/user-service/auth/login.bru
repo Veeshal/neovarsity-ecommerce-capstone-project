@@ -16,3 +16,9 @@ body:json {
     "password": "4321"
   }
 }
+
+tests {
+  let token = res.body.accessToken;
+  bru.setVar("access-token", token);
+  
+}

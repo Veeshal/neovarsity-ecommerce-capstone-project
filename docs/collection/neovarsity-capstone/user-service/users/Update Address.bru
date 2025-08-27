@@ -1,0 +1,35 @@
+meta {
+  name: Update Address
+  type: http
+  seq: 6
+}
+
+put {
+  url: {{base-url}}{{context}}/v1/users/address/:addressId
+  body: json
+  auth: inherit
+}
+
+params:path {
+  addressId: 
+}
+
+body:json {
+  {
+    "addressName": "home",
+    "addressLine1": "address line 1",
+    "addressLine2": "address line 2",
+    "city": "mumbai",
+    "state": "maharashtra",
+    "postalCode": "400101",
+    "country": "india",
+    "phoneNumber": "99999999",
+    "latitude": 0.1,
+    "longitude": 0.1,
+    "isDefault": true
+  }
+}
+
+settings {
+  encodeUrl: true
+}
