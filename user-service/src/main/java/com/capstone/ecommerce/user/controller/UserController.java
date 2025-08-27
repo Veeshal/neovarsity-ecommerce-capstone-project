@@ -1,10 +1,10 @@
 package com.capstone.ecommerce.user.controller;
 
 import com.capstone.ecommerce.user.dto.AppUserDto;
+import com.capstone.ecommerce.user.dto.AddressDto;
 import com.capstone.ecommerce.user.dto.ListAppUserResponse;
 import com.capstone.ecommerce.user.dto.ResetPasswordConfirmRequest;
 import com.capstone.ecommerce.user.dto.ResetPasswordRequest;
-import com.capstone.ecommerce.user.exceptions.InvalidUserPrincipalException;
 import com.capstone.ecommerce.user.service.AppUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,23 +31,15 @@ public class UserController {
     @GetMapping
     public AppUserDto getUser(@AuthenticationPrincipal Jwt jwt) {
 
-        log.info("getUser {}", jwt);
-
-//        jwt.getHeaders().forEach((s, o) -> log.info("Headers >> {}: {}", s, o));
-//        jwt.getClaims().forEach((s, o) -> log.info("Claims >> {}: {}", s, o));
-
-        String email = (String) jwt.getClaims().get("email");
-
-        var user = appUserService.getUserByEmail(email).orElseThrow(() ->
-                new InvalidUserPrincipalException(email));
-
-
-        return AppUserDto.from(user);
+        var email = getEmailFromToken(jwt);
+        var user = appUserService.getUserByEmailWithAddress(email);
+        return AppUserDto.withAddress(user);
     }
 
     @PutMapping
-    public AppUserDto getUser(AppUserDto appUserDto) {
-        return null; // TODO: Replace with actual implementation
+    public AppUserDto updateUser(@RequestBody AppUserDto appUserDto) {
+        var user = appUserService.updateUser(appUserDto);
+        return AppUserDto.from(user);
     }
 
 
@@ -63,19 +55,34 @@ public class UserController {
     }
 
     @PostMapping("address")
-    public AppUserDto addUserAddress() {
-        return null; // TODO: Replace with actual implementation
+    public AddressDto addUserAddress(@RequestBody AddressDto newAddress, @AuthenticationPrincipal Jwt jwt) {
+        var email = getEmailFromToken(jwt);
+        var address = appUserService.addAddress(newAddress, email);
+        return AddressDto.from(address);
     }
 
     @PutMapping("address/{id}")
-    public AppUserDto updateUserAddress(@PathVariable("id") Long addressId) {
-        return null; // TODO: Replace with actual implementation
+    public AddressDto updateUserAddress(@PathVariable("id") Long addressId, @RequestBody AddressDto updatedAddress,
+                                        @AuthenticationPrincipal Jwt jwt) {
+        var email = getEmailFromToken(jwt);
+        var address = appUserService.updateAddress(addressId, updatedAddress, email);
+        return AddressDto.from(address);
     }
 
     @DeleteMapping("address/{id}")
-    public AppUserDto deleteUserAddress(@PathVariable("id") Long addressId) {
-        // Logic to delete user address by ID
-        return null; // TODO: Replace with actual implementation
+    public void deleteUserAddress(@PathVariable("id") Long addressId, @AuthenticationPrincipal Jwt jwt) {
+        var email = getEmailFromToken(jwt);
+        appUserService.deleteAddress(addressId, email);
+    }
+
+    private String getEmailFromToken(Jwt jwt) {
+        log.info("getUser {}", jwt);
+
+//        jwt.getHeaders().forEach((s, o) -> log.info("Headers >> {}: {}", s, o));
+//        jwt.getClaims().forEach((s, o) -> log.info("Claims >> {}: {}", s, o));
+
+
+        return  (String) jwt.getClaims().get("email");
     }
 
 }

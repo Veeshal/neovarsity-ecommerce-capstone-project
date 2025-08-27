@@ -24,6 +24,9 @@ public class AppUser extends BaseEntity implements UserDetails {
     @ManyToMany
     private List<Role> roles;
 
+    @OneToMany(mappedBy = "user")
+    private List<UserAddress> addresses;
+
     @Override
     public List<Role> getAuthorities() {
         return roles;

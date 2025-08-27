@@ -1,10 +1,15 @@
 package com.capstone.ecommerce.user.service;
 
+import com.capstone.ecommerce.user.dto.AddressDto;
+import com.capstone.ecommerce.user.dto.AppUserDto;
 import com.capstone.ecommerce.user.entity.AppUser;
 import com.capstone.ecommerce.user.entity.PasswordResetToken;
 import com.capstone.ecommerce.user.entity.PasswordTokenStatus;
+import com.capstone.ecommerce.user.entity.UserAddress;
+import com.capstone.ecommerce.user.exceptions.InvalidUserAddressException;
 import com.capstone.ecommerce.user.repository.AppUserRepository;
 import com.capstone.ecommerce.user.repository.PasswordResetTokensRepository;
+import com.capstone.ecommerce.user.repository.UserAddressRepository;
 import com.capstone.ecommerce.user.stream.producer.PasswordResetProducer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +34,7 @@ public class AppUserService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final PasswordResetTokensRepository passwordResetTokensRepository;
     private final PasswordResetProducer passwordResetProducer;
+    private final UserAddressRepository userAddressRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -40,10 +46,16 @@ public class AppUserService implements UserDetailsService {
         return appUserRepository.findByEmail(email);
     }
 
+    public AppUser getUserByEmailWithAddress(String email) {
+        return appUserRepository.findByEmailWithAddress(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+    }
+
     public List<AppUser> getAllUsers() {
         return appUserRepository.findAll();
     }
 
+    @Transactional
     public AppUser registerUser(String email, String password, String name) {
         var user = getUserByEmail(email);
 
@@ -80,6 +92,18 @@ public class AppUserService implements UserDetailsService {
 
         appUserRepository.save(newUser);
         return newUser;
+    }
+
+    @Transactional
+    public AppUser updateUser(AppUserDto updateUser) {
+
+        var user = getUserByEmail(updateUser.email())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + updateUser.email()));
+
+        user.setName(updateUser.name());
+        user.setPhoneNumber(updateUser.phone());
+        return appUserRepository.save(user);
+
     }
 
     /**
@@ -156,4 +180,64 @@ public class AppUserService implements UserDetailsService {
         token.setStatus(PasswordTokenStatus.CONSUMED);
         passwordResetTokensRepository.save(token);
     }
+
+    @Transactional
+    public UserAddress addAddress(AddressDto newAddress, String email) {
+
+
+        AppUser user = appUserRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+
+
+        UserAddress address = new UserAddress();
+        address.setUser(user);
+        address.setCreatedAt(LocalDateTime.now());
+
+        updateUserAddress(newAddress, address);
+        return userAddressRepository.save(address);
+
+    }
+
+
+    @Transactional
+    public UserAddress updateAddress(Long addressId, AddressDto updatedAddress, String email) {
+
+        AppUser user = appUserRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+
+        var address = userAddressRepository.findByUserAndId(user, addressId)
+                .orElseThrow(() -> new InvalidUserAddressException(addressId));
+        address.setUpdatedAt(LocalDateTime.now());
+
+        updateUserAddress(updatedAddress, address);
+        return userAddressRepository.save(address);
+
+    }
+
+    @Transactional
+    public void deleteAddress(Long addressId, String email) {
+
+        AppUser user = appUserRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+
+        var address = userAddressRepository.findByUserAndId(user, addressId)
+                .orElseThrow(() -> new InvalidUserAddressException(addressId));
+
+        userAddressRepository.delete(address);
+    }
+
+    private void updateUserAddress(AddressDto updatedAddress, UserAddress address) {
+        address.setAddressLine1(updatedAddress.addressLine1());
+        address.setAddressLine2(updatedAddress.addressLine2());
+        address.setAddressName(updatedAddress.addressName());
+        address.setCity(updatedAddress.city());
+        address.setState(updatedAddress.state());
+        address.setCountry(updatedAddress.country());
+        address.setPostalCode(updatedAddress.postalCode());
+        address.setPhoneNumber(updatedAddress.phoneNumber());
+        address.setLatitude(updatedAddress.latitude());
+        address.setLongitude(updatedAddress.longitude());
+        address.setDefault(updatedAddress.isDefault());
+    }
+
 }
