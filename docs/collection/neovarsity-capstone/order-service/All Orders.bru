@@ -1,0 +1,20 @@
+meta {
+  name: All Orders
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{base-url}}{{context}}/api/v1/orders
+  body: none
+  auth: inherit
+}
+
+params:query {
+  ~page: 0
+  ~size: 1
+}
+
+settings {
+  encodeUrl: true
+}

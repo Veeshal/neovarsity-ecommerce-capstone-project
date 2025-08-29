@@ -2,6 +2,14 @@ meta {
   name: order-service
 }
 
+auth {
+  mode: bearer
+}
+
+auth:bearer {
+  token: {{access-token}}
+}
+
 vars:pre-request {
   context: /order-service
   ~context: 
