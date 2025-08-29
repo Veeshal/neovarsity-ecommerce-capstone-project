@@ -22,10 +22,10 @@ public class OrderItem {
     private Order order;
 
     @Column(name = "product_id", nullable = false)
-    private String productId;
+    private Long productId;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(name = "product_name", nullable = false)
+    private String productName;
 
     @Column(name = "price", nullable = false)
     private BigDecimal price;

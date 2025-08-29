@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{base-url}}{{context}}/api/v1/order
+  url: {{base-url}}{{context}}/api/v1/orders
   body: json
   auth: inherit
 }
@@ -13,7 +13,27 @@ post {
 body:json {
   {
     "userId": 1,
-    "addressId": 1,
-    "paymentMethodId": 1
+    "addressId": 2,
+    "paymentMethod": "stripe",
+    "cart": {
+      "items": [
+        {
+          "product": {
+            "id": 1,
+            "name": "Product 1",
+            "price": 50
+          },
+          "quantity": 2
+        },
+        {
+          "product": {
+            "id": 2,
+            "name": "Product 2",
+            "price": 20
+          },
+          "quantity": 1
+        }
+      ]
+    }
   }
 }

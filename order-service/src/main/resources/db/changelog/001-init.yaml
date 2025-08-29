@@ -1,57 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 001-create-order-status
-      author: veeshal
-      changes:
-        - createTable:
-            tableName: order_status
-            columns:
-              - column:
-                  name: id
-                  type: INT
-                  autoIncrement: true
-                  constraints:
-                    primaryKey: true
-                    nullable: false
-              - column:
-                  name: status
-                  type: VARCHAR(30)
-                  constraints:
-                    nullable: false
-                    unique: true
-        - insert:
-            tableName: order_status
-            columns:
-              - column:
-                  name: status
-                  value: "PENDING"
-        - insert:
-            tableName: order_status
-            columns:
-              - column:
-                  name: status
-                  value: "PAID"
-        - insert:
-            tableName: order_status
-            columns:
-              - column:
-                  name: status
-                  value: "SHIPPED"
-        - insert:
-            tableName: order_status
-            columns:
-              - column:
-                  name: status
-                  value: "DELIVERED"
-        - insert:
-            tableName: order_status
-            columns:
-              - column:
-                  name: status
-                  value: "CANCELLED"
-
-  - changeSet:
-      id: 002-create-orders
+      id: 001-create-orders
       author: veeshal
       changes:
         - createTable:
@@ -60,21 +9,35 @@ databaseChangeLog:
               - column:
                   name: id
                   type: VARCHAR(36)
+                  defaultValueComputed: "(uuid())"
                   constraints:
                     primaryKey: true
                     nullable: false
               - column:
                   name: user_id
-                  type: VARCHAR(50)
+                  type: bigint
                   constraints:
                     nullable: false
               - column:
-                  name: status_id
-                  type: INT
+                  name: delivery_address_id
+                  type: bigint
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_orders_status
-                    references: order_status(id)
+              - column:
+                  name: payment_method
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                    name: payment_link
+                    type: VARCHAR(1000)
+                    constraints:
+                        nullable: true
+              - column:
+                  name: status
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
               - column:
                   name: total_amount
                   type: DECIMAL(10, 2)
@@ -90,7 +53,7 @@ databaseChangeLog:
                   defaultValueComputed: "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
 
   - changeSet:
-      id: 003-create-order-items
+      id: 002-create-order-items
       author: veeshal
       changes:
         - createTable:
@@ -113,11 +76,11 @@ databaseChangeLog:
                     deleteCascade: true
               - column:
                   name: product_id
-                  type: VARCHAR(50)
+                  type: bigint
                   constraints:
                     nullable: false
               - column:
-                  name: name
+                  name: product_name
                   type: VARCHAR(255)
                   constraints:
                     nullable: false

@@ -1,20 +1,29 @@
 package com.capstone.ecommerce.order.entity;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import org.aspectj.weaver.ast.Or;
 
-@Entity
-@Table(name = "order_status")
-@Data
-@NoArgsConstructor
+import java.util.Arrays;
+
+@Getter
 @AllArgsConstructor
-public class OrderStatus {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public enum OrderStatus {
+    INITIATED(1, "initiated", "Order has been initiated"),
+    PLACED(2, "placed", "Order has been placed"),
+    SHIPPED(3, "shipped", "Order has been shipped"),
+    DELIVERED(4, "delivered", "Order has been delivered"),
+    CANCELLED(5, "cancelled", "Order has been cancelled");
 
-    @Column(name = "status", nullable = false, unique = true)
-    private String status;
+    private final int id;
+    private final String code;
+    private final String description;
+
+    public static OrderStatus from(String code) {
+        return Arrays.stream(OrderStatus.values())
+                .filter(status -> status.code.equalsIgnoreCase(code))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Invalid order status: " + code));
+    }
+
 }
