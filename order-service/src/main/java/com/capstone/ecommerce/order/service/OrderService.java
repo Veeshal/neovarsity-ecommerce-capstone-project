@@ -12,11 +12,16 @@ import com.capstone.ecommerce.order.repository.OrderItemRepository;
 import com.capstone.ecommerce.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -88,11 +93,14 @@ public class OrderService {
         return order;
     }
 
-    public Order getOrder(Long orderId) {
-        return null;
+    public Order getOrder(Long userId, String orderId) {
+        return orderRepository.findByUserIdAndOrderId(userId, UUID.fromString(orderId))
+                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
     }
 
-    public List<Order> getOrderHistory() {
-        return null;
+    public Page<Order> getOrderHistory(Long userId, int page, int size) {
+        var pageRequest = PageRequest.of(page, size)
+                .withSort(Sort.by("updatedAt").descending());
+        return orderRepository.findByUserId(userId, pageRequest);
     }
 }
