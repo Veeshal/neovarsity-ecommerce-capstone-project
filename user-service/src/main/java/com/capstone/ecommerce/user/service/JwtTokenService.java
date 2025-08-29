@@ -33,13 +33,14 @@ public class JwtTokenService {
 
         // Create JWT claims
         JwtClaimsSet claimsSet = JwtClaimsSet.builder()
-                .issuer("http://localhost:8080")
+                .issuer("http://localhost:8000") // TODO: Change this to your domain
                 .subject(user.getName())
                 .issuedAt(currentTime)
                 .expiresAt(currentTime.plus(tokenDuration, ChronoUnit.SECONDS))
                 .claim("role", "USER")
                 .claim("email", user.getEmail())
                 .claim("name", user.getName())
+                .claim("userId", user.getId()) // TODO: Remove this in production. Find alternative to get userId from token
                 .build();
 
 
