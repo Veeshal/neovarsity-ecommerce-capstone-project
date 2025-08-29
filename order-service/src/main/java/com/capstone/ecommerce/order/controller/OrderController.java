@@ -2,6 +2,7 @@ package com.capstone.ecommerce.order.controller;
 
 import com.capstone.ecommerce.order.dto.CreateOrderRequest;
 import com.capstone.ecommerce.order.dto.OrderDto;
+import com.capstone.ecommerce.order.dto.OrderItemDto;
 import com.capstone.ecommerce.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +42,17 @@ public class OrderController {
         var userId = getUserIdFromToken(jwt);
         var orders = orderService.getOrderHistory(userId, page, size);
         return orders.map(OrderDto::from).toList();
+    }
+
+    @GetMapping("{orderId}/items")
+    public List<OrderItemDto> getOrderItems(
+            @AuthenticationPrincipal Jwt jwt, @PathVariable("orderId") String orderId,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
+
+        var userId = getUserIdFromToken(jwt);
+        var orderItems = orderService.getOrderItems(userId, orderId, page, size);
+        return orderItems.stream().map(OrderItemDto::from).toList();
     }
 
     private Long getUserIdFromToken(Jwt jwt) {

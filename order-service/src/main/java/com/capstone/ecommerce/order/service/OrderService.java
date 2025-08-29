@@ -103,4 +103,11 @@ public class OrderService {
                 .withSort(Sort.by("updatedAt").descending());
         return orderRepository.findByUserId(userId, pageRequest);
     }
+
+    public Page<OrderItem> getOrderItems(Long userId, String orderId, int page, int size) {
+        var pageRequest = PageRequest.of(page, size);
+
+        var order = getOrder(userId, orderId);
+        return orderItemRepository.findByOrder(order, pageRequest);
+    }
 }
