@@ -25,4 +25,17 @@ Payment --> Order: paymentLink
 Order --> Cart: Order details along with paymentLink
 Cart --> Frontend: paymentLink, orderId
 
+== Payment Gateway Callback ==
+
+"Payment\nGateway" -> Payment: webhook(paymentStatus)
+Payment -> Payment: validate webhook
+
+Payment -> Kafka: publish(payment.completed)
+Kafka -> Order: consume(payment.completed)
+Order -> Order: setStatus(PLACED)
+Order -> Kafka: publish(order.placed)
+
+Kafka -> Cart: consume(order.placed)
+Cart -> Cart: clearCart()
+
 @enduml

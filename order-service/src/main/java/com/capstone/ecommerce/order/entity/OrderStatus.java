@@ -2,7 +2,6 @@ package com.capstone.ecommerce.order.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.aspectj.weaver.ast.Or;
 
 import java.util.Arrays;
 

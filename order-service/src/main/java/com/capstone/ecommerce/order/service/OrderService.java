@@ -88,6 +88,9 @@ public class OrderService {
             var paymentLink = paymentClient.generatePayment(userId, orderId, paymentMethod, totalAmount);
             order.setPaymentLink(paymentLink);
             log.info("Payment link generated: {}", paymentLink);
+        } else {
+            order.setStatus(OrderStatus.PLACED);
+
         }
 
         return order;

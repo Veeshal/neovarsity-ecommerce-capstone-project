@@ -1,0 +1,21 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+
+Frontend -> Cart: checkout(\n\taddress,\n\tpaymentMethod.COD\n)
+
+Cart -> Order: createOrder(\n\taddress,\n\tpaymentMethod.COD,\n\tcartItems\n)
+
+Order -> Product: validateStock(\n\tcartItems\n)
+opt #pink stock not available
+    Product --> Order: stockNotAvailable
+    Order --> Cart: error("Out of stock")
+    Cart --> Frontend: error("Out of stock")
+end
+Order -> Order: Generate Order with\n1. Address,\n2. PaymentStatus.Pending,\n3. amount\n
+
+Order --> Cart: Order details without paymentLink
+Cart -> Cart: clearCart()
+Cart --> Frontend: orderId
+
+@enduml
