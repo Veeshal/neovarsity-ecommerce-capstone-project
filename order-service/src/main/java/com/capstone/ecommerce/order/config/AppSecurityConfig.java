@@ -33,7 +33,6 @@ public class AppSecurityConfig {
     private String[] openEndpointPatterns() {
         return new String[]{
                 "/actuator/**",
-                "/v1/orders/**", // TODO: Make secure later
                 "/swagger-ui.html",
                 "/swagger-ui/**",
                 "/webjars/**",
