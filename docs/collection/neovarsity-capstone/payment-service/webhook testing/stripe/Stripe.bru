@@ -1,0 +1,21 @@
+meta {
+  name: Stripe
+  type: http
+  seq: 1
+}
+
+post {
+  url: https://{{ngrok-id}}.ngrok-free.app/payment-service/api/v1/payments/webhook/stripe
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "v": "j"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

@@ -97,6 +97,9 @@ public class StripePaymentGateway implements PaymentGatewayStrategy {
             String payload = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
             String sigHeader = request.getHeader("Stripe-Signature");
 
+            log.info("Received Stripe webhook with signature: {}", sigHeader);
+            log.info("Received Stripe webhook with payload: {}", payload);
+
             Event event = Webhook.constructEvent(
                     payload,
                     sigHeader,
