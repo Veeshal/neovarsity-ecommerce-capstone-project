@@ -1,0 +1,31 @@
+meta {
+  name: Create Payment Link RazorPay
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{base-url}}{{context}}/v1/payments
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "totalAmount": 100,
+    "currency": "usd",
+    "gateway": "razorpay",
+    "items": [
+      {
+        "itemName": "Product 1",
+        "price": 50,
+        "quantity": 2
+      },
+      {
+        "itemName": "Product 1",
+        "price": 50,
+        "quantity": 2
+      }
+    ]
+  }
+}

@@ -2,6 +2,10 @@ meta {
   name: payment-service
 }
 
+auth {
+  mode: inherit
+}
+
 vars:pre-request {
   context: /payment-service/api
   ~context: 

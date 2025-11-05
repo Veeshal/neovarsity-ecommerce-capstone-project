@@ -1,22 +1,21 @@
 package com.capstone.ecommerce.payment.strategy;
 
+import com.capstone.ecommerce.payment.dto.Item;
+import com.capstone.ecommerce.payment.dto.PaymentLinkInfo;
 import com.capstone.ecommerce.payment.exceptions.PaymentLinkGenerationException;
 import com.stripe.exception.SignatureVerificationException;
+import com.stripe.exception.StripeException;
 import com.stripe.model.Event;
 import com.stripe.model.PaymentIntent;
-import com.stripe.model.PaymentLink;
-import com.stripe.model.Price;
-import com.stripe.model.billingportal.Session;
+
+import com.stripe.model.checkout.Session;
 import com.stripe.net.Webhook;
-import com.stripe.param.PaymentLinkCreateParams;
-import com.stripe.param.PriceCreateParams;
-import jakarta.servlet.http.HttpServletRequest;
+import com.stripe.param.checkout.SessionCreateParams;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @Slf4j
 @Component(PaymentGatewayStrategy.PAYMENT_GATEWAY_STRIPE)
@@ -28,97 +27,73 @@ public class StripePaymentGateway implements PaymentGatewayStrategy {
     @Value("${ecom.payment_redirect_url}")
     private String REDIRECT_URL;
 
-    public String createPaymentLink(String paymentDetails) throws PaymentLinkGenerationException {
-        // Logic to process payment using Stripe API
-        // This is a placeholder for actual Stripe integration code
+    public PaymentLinkInfo createPaymentLink(String orderId, List<Item> items, String currency)
+            throws PaymentLinkGenerationException {
 
-        log.debug("Processing payment with Stripe: {}", paymentDetails);
+        log.debug("Processing payment with Stripe...");
 
         try {
-            Price price = getPrice("50"); // TODO: Update price from request.
 
-            var params = PaymentLinkCreateParams.builder().addLineItem(
-                    PaymentLinkCreateParams.LineItem.builder()
-                            .setPrice(price.getId())
-                            .setQuantity(1L)
-                            .build()
-                    )
-                    .setAfterCompletion(
-                            PaymentLinkCreateParams.AfterCompletion.builder()
-                                    .setType(PaymentLinkCreateParams.AfterCompletion.Type.REDIRECT)
-                                    .setRedirect(
-                                            PaymentLinkCreateParams.AfterCompletion.Redirect.builder()
-                                                    .setUrl(REDIRECT_URL)
+            var lineItems = items.stream().map(s -> SessionCreateParams.LineItem.builder()
+                    .setQuantity((long) s.quantity())
+                    .setPriceData(
+                            SessionCreateParams.LineItem.PriceData.builder()
+                                    .setCurrency(currency)
+                                    .setUnitAmount((long) (s.price() * 100)) // Convert to cents
+                                    .setProductData(
+                                            SessionCreateParams.LineItem.PriceData.ProductData.builder()
+                                                    .setName(s.itemName())
                                                     .build())
                                     .build())
+                    .build()).toList();
+
+            var sessionCreateParams = SessionCreateParams.builder()
+                    .setMode(SessionCreateParams.Mode.PAYMENT)
+                    .setSuccessUrl(REDIRECT_URL)
+                    .setCancelUrl(REDIRECT_URL + "?canceled=true")
+                    .addAllLineItem(lineItems)
                     .build();
 
-            PaymentLink paymentLink = PaymentLink.create(params);
-            return paymentLink.getUrl();
-        } catch (Exception e) {
+
+            var session = Session.create(sessionCreateParams);
+
+            return new PaymentLinkInfo(
+                    session.getUrl(),
+                    session.getExpiresAt(),
+                    REDIRECT_URL
+            );
+        } catch (StripeException e) {
             throw new PaymentLinkGenerationException(e);
         }
     }
-
-    public Price getPrice(String priceId) {
-        // Logic to retrieve price details from Stripe
-        // This is a placeholder for actual Stripe integration code
-        log.info("Retrieving price details for: {}", priceId);
-
-        try {
-            PriceCreateParams params =
-                    PriceCreateParams.builder()
-                            .setCurrency("usd")
-                            .setUnitAmount(50000L)
-                            .setProductData(
-                                    PriceCreateParams.ProductData.builder()
-                                            .setName("Product Name")
-                                            .build()
-                            )
-                            .build();
-            Price price = Price.create(params);
-            return price;
-        } catch (Exception e) {
-            throw new PaymentLinkGenerationException(e);
-        }
-    }
-
-
-
-//    public String inlinePricing() {
-//        SessionCreateParams sessionCreateParams = SessionCreateParams.builder().build();
-//    }
 
     @Override
-    public void handleWebhook(HttpServletRequest request) {
+    public void handleWebhook(String payload, String signature) {
 
         try {
 
-            String payload = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-            String sigHeader = request.getHeader("Stripe-Signature");
-
-            log.info("Received Stripe webhook with signature: {}", sigHeader);
+            log.info("Received Stripe webhook with signature: {}", signature);
             log.info("Received Stripe webhook with payload: {}", payload);
 
             Event event = Webhook.constructEvent(
                     payload,
-                    sigHeader,
+                    signature,
                     WEBHOOK_SECRET // your webhook secret from Stripe Dashboard
             );
 
             switch (event.getType()) {
-                case "payment_intent.succeeded":
-                    PaymentIntent intent = (PaymentIntent) event.getDataObjectDeserializer().getObject().orElse(null);
-                    if (intent != null) {
-                        log.info("Payment succeeded for: {}", intent.getId());
-                        // TODO: fulfill order here
-                    }
-                    break;
 
                 case "checkout.session.completed":
                     Session session = (Session) event.getDataObjectDeserializer().getObject().orElse(null);
                     if (session != null) {
                         log.info("Checkout completed: {}", session.getId());
+                        // e.g., use session.getCustomerDetails()
+                    }
+                    break;
+                case "checkout.session.expired":
+                    Session expired = (Session) event.getDataObjectDeserializer().getObject().orElse(null);
+                    if (expired != null) {
+                        log.info("Checkout expired: {}", expired.getId());
                         // e.g., use session.getCustomerDetails()
                     }
                     break;
@@ -131,8 +106,6 @@ public class StripePaymentGateway implements PaymentGatewayStrategy {
             // Invalid signature
             log.error("Webhook error while validating signature.", e);
             throw new RuntimeException("Webhook error: " + e.getMessage());
-        } catch (IOException e) {
-            throw new RuntimeException("IO error: " + e.getMessage());
         }
     }
 }

@@ -1,14 +1,18 @@
 package com.capstone.ecommerce.payment.strategy;
 
+import com.capstone.ecommerce.payment.dto.Item;
+import com.capstone.ecommerce.payment.dto.PaymentLinkInfo;
 import com.capstone.ecommerce.payment.exceptions.PaymentLinkGenerationException;
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.util.List;
 
 public interface PaymentGatewayStrategy {
 
     String PAYMENT_GATEWAY_STRIPE = "stripe";
     String PAYMENT_GATEWAY_RAZORPAY = "razorpay";
 
-    String createPaymentLink(String paymentDetails) throws PaymentLinkGenerationException;
+    PaymentLinkInfo createPaymentLink(String orderId, List<Item> items, String currency) throws PaymentLinkGenerationException;
 
-    void handleWebhook(HttpServletRequest request);
+    void handleWebhook(String payload, String signature);
 }

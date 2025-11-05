@@ -1,10 +1,13 @@
 package com.capstone.ecommerce.payment.service;
 
+import com.capstone.ecommerce.payment.dto.Item;
+import com.capstone.ecommerce.payment.dto.PaymentLinkInfo;
 import com.capstone.ecommerce.payment.strategy.PaymentGatewayStrategy;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @AllArgsConstructor
@@ -12,19 +15,19 @@ import java.util.Map;
 public class PaymentService {
     private Map<String, PaymentGatewayStrategy> paymentGatewayStrategies;
 
-    public String createPaymentLink(String paymentGateway, String paymentDetails) {
+    public PaymentLinkInfo createPaymentLink(String paymentGateway, String orderId, List<Item> items, String currency) {
         PaymentGatewayStrategy strategy = paymentGatewayStrategies.get(paymentGateway);
         if (strategy == null) {
             throw new IllegalArgumentException("Unsupported payment gateway: " + paymentGateway);
         }
-        return strategy.createPaymentLink(paymentDetails);
+        return strategy.createPaymentLink(orderId, items, currency);
     }
 
-    public void handleWebhook(String paymentGateway, HttpServletRequest request) {
+    public void handleWebhook(String paymentGateway, String payload, String signature) {
         PaymentGatewayStrategy strategy = paymentGatewayStrategies.get(paymentGateway);
         if (strategy == null) {
             throw new IllegalArgumentException("Unsupported payment gateway: " + paymentGateway);
         }
-        strategy.handleWebhook(request);
+        strategy.handleWebhook(payload, signature);
     }
 }
