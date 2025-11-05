@@ -6,7 +6,6 @@ import com.capstone.ecommerce.payment.exceptions.PaymentLinkGenerationException;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Event;
-import com.stripe.model.PaymentIntent;
 
 import com.stripe.model.checkout.Session;
 import com.stripe.net.Webhook;
