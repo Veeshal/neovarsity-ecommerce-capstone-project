@@ -1,0 +1,32 @@
+services:
+  - name: cart-service
+    type: web
+    env: docker
+    rootDir: cart-service
+
+  - name: notification-service
+    type: web
+    env: docker
+    rootDir: notification-service
+
+  - name: order-service
+    type: web
+    env: docker
+    rootDir: order-service
+
+  - name: payment-service
+    type: web
+    env: docker
+    rootDir: payment-service
+
+
+  - name: product-service
+    type: web
+    env: docker
+    rootDir: product-service
+
+
+  - name: user-service
+    type: web
+    env: docker
+    rootDir: user-service
