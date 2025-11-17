@@ -1,0 +1,48 @@
+name: Publish Docker Images to GHCR (Monorepo)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      # Get tags
+      - name: Prepare Tags
+        id: vars
+        run: |
+          echo "sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          echo "timestamp=$(date +%Y%m%d%H%M%S)" >> $GITHUB_OUTPUT
+
+      - name: Changed directory
+        id: change
+        run: |
+          echo "changed=$(git diff --name-only HEAD~1 HEAD | cut -d/ -f1 | uniq)" >> $GITHUB_OUTPUT
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_TOKEN }}
+
+
+      # ---- USER SERVICE ----
+      - name: Build & Push user-service
+        if: contains(steps.change.outputs.changed, 'user-service')
+        run: |
+          IMAGE=ghcr.io/${{ github.actor }}/user-service
+
+          docker build -t $IMAGE:latest \
+                       -t $IMAGE:sha-${{ steps.vars.outputs.sha }} \
+                       -t $IMAGE:${{ steps.vars.outputs.timestamp }} \
+                        user-service
+
+          docker push $IMAGE:latest
+          docker push $IMAGE:sha-${{ steps.vars.outputs.sha }}
+          docker push $IMAGE:${{ steps.vars.outputs.timestamp }}
