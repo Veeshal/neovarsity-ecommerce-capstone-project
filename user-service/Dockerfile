@@ -18,7 +18,6 @@ RUN ./gradlew dependencies --no-daemon || true
 COPY src src
 
 # Build application (choose the right one)
-# ---- Gradle:
 RUN ./gradlew bootJar --no-daemon
 
 # ============================

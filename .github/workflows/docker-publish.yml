@@ -38,7 +38,7 @@ jobs:
       - name: Build & Push user-service
         if: contains(steps.change.outputs.changed, 'user-service')
         run: |
-          IMAGE=ghcr.io/${{ github.actor }}/user-service
+          IMAGE=ghcr.io/${{ toLower(github.actor) }}/user-service
 
           docker build -t $IMAGE:latest \
                        -t $IMAGE:sha-${{ steps.vars.outputs.sha }} \
