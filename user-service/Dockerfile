@@ -8,6 +8,9 @@ WORKDIR /app
 COPY gradlew .
 COPY gradle gradle
 
+# Ensure gradlew is executable
+RUN chmod +x gradlew
+
 # Copy build descriptors early for caching
 COPY build.gradle settings.gradle ./
 
