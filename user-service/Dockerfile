@@ -20,6 +20,7 @@ COPY src src
 # Build application (choose the right one)
 RUN ./gradlew bootJar --no-daemon
 
+
 # ============================
 #   RUNTIME STAGE (Java 21 JRE)
 # ============================
