@@ -4,6 +4,13 @@ on:
   push:
     branches:
       - main
+      - dev
+      - 'feature/*'
+  workflow_dispatch:
+    inputs:
+      service:
+        description: 'Service to build (e.g. user-service, order-service)'
+        required: false
 
 jobs:
   publish:
@@ -36,7 +43,7 @@ jobs:
 
       # ---- USER SERVICE ----
       - name: Build & Push user-service
-        if: contains(steps.change.outputs.changed, 'user-service')
+        if: contains(steps.change.outputs.changed, 'user-service') || github.event.inputs.service == 'user-service'
         shell: bash
         run: |
           IMAGE=ghcr.io/${GITHUB_ACTOR,,}/user-service
