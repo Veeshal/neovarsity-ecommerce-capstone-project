@@ -56,3 +56,19 @@ jobs:
           docker push $IMAGE:latest
           docker push $IMAGE:sha-${{ steps.vars.outputs.sha }}
           docker push $IMAGE:${{ steps.vars.outputs.timestamp }}
+
+      # ---- PRODUCT SERVICE ----
+      - name: Build & Push product-service
+        if: contains(steps.change.outputs.changed, 'product-service') || github.event.inputs.service == 'product-service'
+        shell: bash
+        run: |
+          IMAGE=ghcr.io/${GITHUB_ACTOR,,}/product-service
+
+          docker build -t $IMAGE:latest \
+                       -t $IMAGE:sha-${{ steps.vars.outputs.sha }} \
+                       -t $IMAGE:${{ steps.vars.outputs.timestamp }} \
+                        product-service
+
+          docker push $IMAGE:latest
+          docker push $IMAGE:sha-${{ steps.vars.outputs.sha }}
+          docker push $IMAGE:${{ steps.vars.outputs.timestamp }}
