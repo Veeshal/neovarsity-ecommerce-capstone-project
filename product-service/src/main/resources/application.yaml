@@ -22,13 +22,43 @@ spring:
   output:
     ansi:
       enabled: always
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${AUTH_ISSUER_URI:http://localhost:8000}
+          jwk-set-uri: ${AUTH_JWK_ISSUER_URI:http://localhost:8000/user-service/api}/.well-known/jwks.json
   elasticsearch:
     uris: ${ELASTICSEARCH_URIS:http://localhost:9200}
     username: ${ELASTICSEARCH_USERNAME:elastic}
     password: ${ELASTICSEARCH_PASSWORD:password}
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    admin:
+      auto-create: true
+
 kafka:
   topic:
     order-completed: order.completed
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  info:
+    env:
+      enabled: true
+    java:
+      enabled: true
+    os:
+      enabled: true
+    build:
+      enabled: true
+
 #logging:
 #  level:
 #    org.springframework: DEBUG
