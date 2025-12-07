@@ -23,6 +23,9 @@ public class JwtTokenService {
     @Value("${ecom.token_duration}")
     private long tokenDuration;
 
+    @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
+    private String issuer;
+
     private final JwtEncoder jwtEncoder;
     private final JwtDecoder jwtDecoder;
 
@@ -33,7 +36,7 @@ public class JwtTokenService {
 
         // Create JWT claims
         JwtClaimsSet claimsSet = JwtClaimsSet.builder()
-                .issuer("http://localhost:8000") // TODO: Change this to your domain
+                .issuer(issuer)
                 .subject(user.getName())
                 .issuedAt(currentTime)
                 .expiresAt(currentTime.plus(tokenDuration, ChronoUnit.SECONDS))
