@@ -32,8 +32,7 @@ public class AppSecurityConfig {
 
     private String[] openEndpointPatterns() {
         return new String[]{
-//                "/v1/users/all", // TODO: Remove this endpoint in production
-                "/.well-known/jwks.json",
+                "/.well-known/**",
                 "/actuator/**",
                 "/v1/auth/**",
                 "/v1/users/password-reset/request",
