@@ -5,23 +5,14 @@ meta {
 }
 
 delete {
-  url: {{base-url}}{{context}}/v1/cart/items/:productId?userId=1
+  url: {{base-url}}{{context}}/v1/cart/items
   body: json
   auth: inherit
 }
 
-params:query {
-  userId: 1
-}
-
-params:path {
-  productId: 1
-}
-
 body:json {
   {
-    "productId": 3,
-    "quantity": 1,
-    "userId": 1
+    "productId": 4,
+    "quantity": 1
   }
 }

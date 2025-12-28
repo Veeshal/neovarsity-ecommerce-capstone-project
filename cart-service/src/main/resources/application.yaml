@@ -13,19 +13,37 @@ spring:
   output:
     ansi:
       enabled: always
-
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${AUTH_ISSUER_URI:http://localhost:8000}
+          jwk-set-uri: ${AUTH_JWK_ISSUER_URI:http://localhost:8000/user-service/api}/.well-known/jwks.json
   data:
     mongodb:
-      uri: mongodb://${MONGO_USERNAME:root}:${MONGO_PASSWORD:password}@${MONGO_HOST:localhost}:${MONGO_PORT:27017}/cartdb?authSource=admin
+#      uri: mongodb+srv://${MONGO_USERNAME:root}:${MONGO_PASSWORD:password}@${MONGO_HOST:localhost}/cartdb?appName=neovarsity
+      database: cartdb
+      host: ${MONGO_HOST:localhost}
+      username: ${MONGO_USERNAME:root}
+      password: ${MONGO_PASSWORD:password}
+      protocol: mongodb+srv
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
       password: ${REDIS_PASSWORD:password}
+      ssl:
+        enabled: on
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     consumer:
       group-id: cart-service-group
       auto-offset-reset: latest
+    properties:
+      security.protocol: SSL
+      ssl.truststore.type: PEM
+      ssl.truststore.location: ${KAFKA_TRUSTSTORE_PATH}
+      ssl.keystore.type: PEM
+      ssl.keystore.location: ${KAFKA_KEYSTORE_PATH}
 
 management:
   endpoints:
@@ -50,7 +68,20 @@ ecom:
       url: ${PRODUCT_SERVICE_URL:http://localhost:8000/product-service}
     user-service:
       url: ${USER_SERVICE_URL:http://localhost:8000/user-service}
-
+  claims:
+    role: ${JWT_CLAIM_ROLE:role}
+    userId: ${JWT_CLAIM_USER_ID:userId}
+    email: ${JWT_CLAIM_EMAIL:email}
   kafka:
     topics:
       order-placed: order-placed-topic
+
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.springframework.boot.autoconfigure: off
+    org.springframework.web.servlet.DispatcherServlet: DEBUG
+    org.hibernate.orm.connections.pooling: off
+    org.springframework.security: DEBUG
+

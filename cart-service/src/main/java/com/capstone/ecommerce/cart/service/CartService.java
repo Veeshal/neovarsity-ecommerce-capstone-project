@@ -83,8 +83,10 @@ public class CartService {
         Cart cart = cartRepository.findByUserId(userId).orElseThrow(() ->
                 new IllegalArgumentException("Cart not found for user " + userId));
 
-        cart.getItems().removeIf(item -> item.getProduct().getId().equals(productId));
-        cartRepository.save(cart);
+
+        boolean removed = cart.getItems().removeIf(item -> item.getProduct().getId().equals(productId));
+        log.info("Item removed: {} {}", productId, removed);
+        if (removed) cartRepository.save(cart);
         return cart;
     }
 

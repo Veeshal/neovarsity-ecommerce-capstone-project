@@ -1,8 +1,10 @@
 package com.capstone.ecommerce.cart;
 
+import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+@EnableKafka
 @SpringBootApplication
 public class CartServiceApplication {
     public static void main(String[] args) {

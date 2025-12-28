@@ -7,8 +7,15 @@ import com.capstone.ecommerce.cart.service.CartService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 
 @Slf4j
 @RequiredArgsConstructor
@@ -19,16 +26,19 @@ public class CartController {
 
     private final CartService cartService;
 
+    @Value("${ecom.claims.userId}")
+    private String USER_ID_CLAIM;
+
     @GetMapping
-    public Cart getCart(@RequestParam(value = "userId") Long userId) {
-        // TODO: Get userId from JWT token instead of request parameter
+    public Cart getCart(@AuthenticationPrincipal Jwt jwt) {
+        Long userId = jwt.getClaim(USER_ID_CLAIM);
         return cartService.getCart(userId);
     }
 
     @PostMapping("checkout")
-    public CheckoutResponse checkout(@Valid @RequestBody CheckoutRequest request) {
-        // TODO: Get userId from JWT token instead of request parameter
-        var info = cartService.checkout(request.userId(), request.addressId(), request.paymentMethodId());
+    public CheckoutResponse checkout(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody CheckoutRequest request) {
+        Long userId = jwt.getClaim(USER_ID_CLAIM);
+        var info = cartService.checkout(userId, request.addressId(), request.paymentMethodId());
         return new CheckoutResponse(info);
     }
 

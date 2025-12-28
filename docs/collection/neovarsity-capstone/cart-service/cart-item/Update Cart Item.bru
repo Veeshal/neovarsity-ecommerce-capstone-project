@@ -5,19 +5,14 @@ meta {
 }
 
 put {
-  url: {{base-url}}{{context}}/v1/cart/items/:productId
+  url: {{base-url}}{{context}}/v1/cart/items
   body: json
   auth: inherit
 }
 
-params:path {
-  productId: 1
-}
-
 body:json {
   {
-    "productId": 1,
-    "quantity": 2,
-    "userId": 1
+    "productId": 2,
+    "quantity": 10
   }
 }

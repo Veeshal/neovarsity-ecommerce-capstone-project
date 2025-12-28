@@ -14,7 +14,7 @@ public class OrderEventListener {
 
     private final CartService cartService;
 
-    @KafkaListener(topics = "${ecom.kafka.topics.order-placed}", groupId = "${spring.kafka.consumer.group-id}")
+    @KafkaListener(topics = "${ecom.kafka.topics.order-placed}", groupId = "cart-service")
     public void handleOrderPlaced(OrderPlacedEvent event) {
         log.info("Received order placed event: {}", event);
         cartService.clearCart(event.getUserId());
