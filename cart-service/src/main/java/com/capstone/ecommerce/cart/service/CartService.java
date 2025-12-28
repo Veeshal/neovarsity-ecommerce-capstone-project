@@ -1,6 +1,7 @@
 package com.capstone.ecommerce.cart.service;
 
 import com.capstone.ecommerce.cart.client.OrderClient;
+import com.capstone.ecommerce.cart.client.ProductClient;
 import com.capstone.ecommerce.cart.entity.Cart;
 import com.capstone.ecommerce.cart.entity.CartItem;
 import com.capstone.ecommerce.cart.entity.CheckoutInfo;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 public class CartService {
 
     private final OrderClient orderClient;
+    private final ProductClient productClient;
     private final CartRepository cartRepository;
 
     @Transactional
@@ -45,9 +47,7 @@ public class CartService {
             }
         }
         if (!found) {
-            Product product = new Product();
-            product.setId(productId);
-            product.setName("Product Name " + productId); // TODO: Placeholder, should fetch from product service
+            var product = productClient.getProductById(productId);
             CartItem newItem = new CartItem();
             newItem.setProduct(product);
             newItem.setQuantity(quantity);
