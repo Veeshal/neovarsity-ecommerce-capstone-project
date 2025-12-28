@@ -3,14 +3,11 @@ meta {
 }
 
 auth {
-  mode: bearer
-}
-
-auth:bearer {
-  token: {{access-token}}
+  mode: inherit
 }
 
 vars:pre-request {
   context: /user-service/api
-  ~context: 
+  ~context: /api
+  ~base-url: https://user-service-mh3m.onrender.com
 }

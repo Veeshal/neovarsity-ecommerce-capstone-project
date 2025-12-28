@@ -1,6 +1,7 @@
 package com.capstone.ecommerce.product.controller;
 
 import com.capstone.ecommerce.product.dto.ProductDto;
+import com.capstone.ecommerce.product.dto.QuantityUpdateDto;
 import com.capstone.ecommerce.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,8 +43,23 @@ public class ProductController {
         return productService.updateProduct(product);
     }
 
+    @PutMapping("{id}/deactivate")
+    public ProductDto deactivate(@PathVariable(name = "id") Long productId) {
+        return productService.updateProductActiveState(productId, false);
+    }
+
+    @PutMapping("{id}/activate")
+    public ProductDto activateProduct(@PathVariable(name = "id") Long productId) {
+        return productService.updateProductActiveState(productId, true);
+    }
+
+    @PutMapping("/stock")
+    public ProductDto updateProductStock(@RequestBody QuantityUpdateDto dto) {
+        return productService.updateProductStock(dto.productId(), dto.quantity());
+    }
+
     @DeleteMapping("{id}")
     public void deleteProduct(@PathVariable(name = "id") Long productId) {
-        productService.deactivateProduct(productId);
+        productService.deleteProduct(productId);
     }
 }

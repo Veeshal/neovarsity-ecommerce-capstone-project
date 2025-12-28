@@ -5,7 +5,11 @@ meta {
 }
 
 get {
-  url: {{base-url}}/
+  url: {{base-url}}{{context}}/v1/product/:productId
   body: none
   auth: inherit
+}
+
+params:path {
+  productId: 1
 }

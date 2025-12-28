@@ -6,8 +6,8 @@ import com.capstone.ecommerce.product.entity.Category;
 import com.capstone.ecommerce.product.entity.Specification;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.time.LocalDateTime;
 
@@ -18,11 +18,11 @@ public record ProductDto(
         String thumbnail,
         List<String> images,
         BigDecimal price,
-        int quantity,
+        Integer quantity,
         Long categoryId,
         String categoryName,
         List<SpecificationDto> specifications,
-        boolean isActive,
+        Boolean isActive,
         String createdAt,
         String updatedAt
 ) {
@@ -73,10 +73,10 @@ public record ProductDto(
                         spec.setProduct(product);
                         return spec;
                     })
-                    .collect(Collectors.toList())
+                    .collect(Collectors.toSet())
             );
         } else {
-            product.setSpecifications(new ArrayList<>());
+            product.setSpecifications(new HashSet<>());
         }
 
         // Set images
@@ -89,10 +89,10 @@ public record ProductDto(
                         img.setProduct(product);
                         return img;
                     })
-                    .collect(Collectors.toList())
+                    .collect(Collectors.toSet())
             );
         } else {
-            product.setImages(new ArrayList<>());
+            product.setImages(new HashSet<>());
         }
 
         // Set createdAt and updatedAt if present

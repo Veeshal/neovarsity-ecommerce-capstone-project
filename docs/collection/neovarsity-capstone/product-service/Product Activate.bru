@@ -1,0 +1,15 @@
+meta {
+  name: Product Activate
+  type: http
+  seq: 6
+}
+
+put {
+  url: {{base-url}}{{context}}/v1/product/:productId/activate
+  body: none
+  auth: inherit
+}
+
+params:path {
+  productId: 1
+}

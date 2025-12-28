@@ -3,6 +3,8 @@ meta {
 }
 
 vars:pre-request {
-  context: /product
-  ~context: 
+  context: /product-service/api
+  ~context: /api
+  ~base-url: http://localhost:8080
+  ~base-url: https://product-hbz7.onrender.com
 }

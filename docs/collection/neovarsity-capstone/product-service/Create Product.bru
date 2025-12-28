@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{base-url}}/product
+  url: {{base-url}}{{context}}/v1/product
   body: json
   auth: inherit
 }
@@ -13,7 +13,7 @@ post {
 body:json {
   {
     "id": null,
-    "name": "iPhone 15 Pro",
+    "name": "iPhone 13 Pro",
     "description": "Latest Apple iPhone with advanced features",
     "thumbnail": "https://example.com/images/iphone15pro-thumb.jpg",
     "images": [

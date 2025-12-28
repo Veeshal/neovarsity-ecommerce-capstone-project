@@ -8,10 +8,6 @@ server:
     context-path: /api
 
 spring:
-  profiles:
-    active: bonsai
-
-
   application:
     name: product-service
   datasource:

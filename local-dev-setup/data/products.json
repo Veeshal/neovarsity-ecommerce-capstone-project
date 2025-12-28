@@ -1,0 +1,677 @@
+[
+  {
+    "id": null,
+    "name": "Samsung Galaxy S22 Ultra",
+    "description": "Flagship Samsung smartphone with advanced camera system",
+    "thumbnail": "https://example.com/images/galaxy-s22-thumb.jpg",
+    "images": [
+      "https://example.com/images/galaxy-s22-1.jpg",
+      "https://example.com/images/galaxy-s22-2.jpg"
+    ],
+    "price": 1199.99,
+    "quantity": 40,
+    "categoryId": null,
+    "categoryName": "Smartphones",
+    "specifications": [
+      {
+        "name": "Color",
+        "value": "Phantom Black"
+      },
+      {
+        "name": "Storage",
+        "value": "512GB"
+      }
+    ],
+    "isActive": true,
+    "createdAt": null,
+    "updatedAt": null
+  },
+  {
+    "id": null,
+    "name": "Google Pixel 7 Pro",
+    "description": "Google’s premium phone with AI-powered photography",
+    "thumbnail": "https://example.com/images/pixel7pro-thumb.jpg",
+    "images": [
+      "https://example.com/images/pixel7pro-1.jpg",
+      "https://example.com/images/pixel7pro-2.jpg"
+    ],
+    "price": 999.99,
+    "quantity": 60,
+    "categoryId": null,
+    "categoryName": "Smartphones",
+    "specifications": [
+      {
+        "name": "Color",
+        "value": "Snow"
+      },
+      {
+        "name": "Storage",
+        "value": "256GB"
+      }
+    ],
+    "isActive": true,
+    "createdAt": null,
+    "updatedAt": null
+  },
+  {
+    "id": null,
+    "name": "MacBook Pro 16-inch",
+    "description": "Apple’s powerful laptop with M2 Max chip",
+    "thumbnail": "https://example.com/images/macbookpro16-thumb.jpg",
+    "images": [
+      "https://example.com/images/macbookpro16-1.jpg",
+      "https://example.com/images/macbookpro16-2.jpg"
+    ],
+    "price": 2499.99,
+    "quantity": 25,
+    "categoryId": null,
+    "categoryName": "Laptops",
+    "specifications": [
+      {
+        "name": "Color",
+        "value": "Space Gray"
+      },
+      {
+        "name": "RAM",
+        "value": "32GB"
+      }
+    ],
+    "isActive": true,
+    "createdAt": null,
+    "updatedAt": null
+  },
+  {
+    "id": null,
+    "name": "Dell XPS 13",
+    "description": "Compact ultrabook with InfinityEdge display",
+    "thumbnail": "https://example.com/images/xps13-thumb.jpg",
+    "images": [
+      "https://example.com/images/xps13-1.jpg",
+      "https://example.com/images/xps13-2.jpg"
+    ],
+    "price": 1399.99,
+    "quantity": 35,
+    "categoryId": null,
+    "categoryName": "Laptops",
+    "specifications": [
+      {
+        "name": "Color",
+        "value": "Silver"
+      },
+      {
+        "name": "Storage",
+        "value": "1TB SSD"
+      }
+    ],
+    "isActive": true,
+    "createdAt": null,
+    "updatedAt": null
+  },
+  {
+    "id": null,
+    "name": "Sony WH-1000XM5",
+    "description": "Noise-cancelling wireless headphones",
+    "thumbnail": "https://example.com/images/sonyxm5-thumb.jpg",
+    "images": [
+      "https://example.com/images/sonyxm5-1.jpg",
+      "https://example.com/images/sonyxm5-2.jpg"
+    ],
+    "price": 399.99,
+    "quantity": 80,
+    "categoryId": null,
+    "categoryName": "Headphones",
+    "specifications": [
+      {
+        "name": "Color",
+        "value": "Black"
+      },
+      {
+        "name": "Battery Life",
+        "value": "30 hours"
+      }
+    ],
+    "isActive": true,
+    "createdAt": null,
+    "updatedAt": null
+  },
+  {
+    "id": null,
+    "name": "Apple AirPods Pro 2",
+    "description": "Wireless earbuds with active noise cancellation",
+    "thumbnail": "https://example.com/images/airpodspro2-thumb.jpg",
+    "images": [
+      "https://example.com/images/airpodspro2-1.jpg",
+      "https://example.com/images/airpodspro2-2.jpg"
+    ],
+    "price": 249.99,
+    "quantity": 100,
+    "categoryId": null,
+    "categoryName": "Headphones",
+    "specifications": [
+      {
+        "name": "Color",
+        "value": "White"
+      },
+      {
+        "name": "Battery Life",
+        "value": "6 hours"
+      }
+    ],
+    "isActive": true,
+    "createdAt": null,
+    "updatedAt": null
+  },
+  {
+    "id": null,
+    "name": "Apple Watch Series 9",
+    "description": "Smartwatch with health and fitness tracking",
+    "thumbnail": "https://example.com/images/applewatch9-thumb.jpg",
+    "images": [
+      "https://example.com/images/applewatch9-1.jpg",
+      "https://example.com/images/applewatch9-2.jpg"
+    ],
+    "price": 499.99,
+    "quantity": 70,
+    "categoryId": null,
+    "categoryName": "Wearables",
+    "specifications": [
+      {
+        "name": "Color",
+        "value": "Midnight"
+      },
+      {
+        "name": "Size",
+        "value": "45mm"
+      }
+    ],
+    "isActive": true,
+    "createdAt": null,
+    "updatedAt": null
+  },
+  {
+    "id": null,
+    "name": "Fitbit Charge 6",
+    "description": "Fitness tracker with heart rate monitoring",
+    "thumbnail": "https://example.com/images/fitbitcharge6-thumb.jpg",
+    "images": [
+      "https://example.com/images/fitbitcharge6-1.jpg",
+      "https://example.com/images/fitbitcharge6-2.jpg"
+    ],
+    "price": 179.99,
+    "quantity": 90,
+    "categoryId": null,
+    "categoryName": "Wearables",
+    "specifications": [
+      {
+        "name": "Color",
+        "value": "Blue"
+      },
+      {
+        "name": "Battery Life",
+        "value": "7 days"
+      }
+    ],
+    "isActive": true,
+    "createdAt": null,
+    "updatedAt": null
+  },
+  {
+    "id": null,
+    "name": "iPad Pro 12.9",
+    "description": "Apple’s premium tablet with M2 chip",
+    "thumbnail": "https://example.com/images/ipadpro-thumb.jpg",
+    "images": [
+      "https://example.com/images/ipadpro-1.jpg",
+      "https://example.com/images/ipadpro-2.jpg"
+    ],
+    "price": 1099.99,
+    "quantity": 45,
+    "categoryId": null,
+    "categoryName": "Tablets",
+    "specifications": [
+      {
+        "name": "Color",
+        "value": "Silver"
+      },
+      {
+        "name": "Storage",
+        "value": "512GB"
+      }
+    ],
+    "isActive": true,
+    "createdAt": null,
+    "updatedAt": null
+  },
+  {
+    "id": null,
+    "name": "Samsung Galaxy Tab S8",
+    "description": "High-performance Android tablet",
+    "thumbnail": "https://example.com/images/galaxytabs8-thumb.jpg",
+    "images": [
+      "https://example.com/images/galaxytabs8-1.jpg",
+      "https://example.com/images/galaxytabs8-2.jpg"
+    ],
+    "price": 899.99,
+    "quantity": 55,
+    "categoryId": null,
+    "categoryName": "Tablets",
+    "specifications": [
+      {
+        "name": "Color",
+        "value": "Graphite"
+      },
+      {
+        "name": "Storage",
+        "value": "256GB"
+      }
+    ],
+    "isActive": true,
+    "createdAt": null,
+    "updatedAt": null
+  },
+  {
+    "id": null,
+    "name": "Sony PlayStation 5",
+    "description": "Next-gen gaming console with immersive graphics",
+    "thumbnail": "https://example.com/images/ps5-thumb.jpg",
+    "images": [
+      "https://example.com/images/ps5-1.jpg",
+      "https://example.com/images/ps5-2.jpg"
+    ],
+    "price": 499.99,
+    "quantity": 30,
+    "categoryId": null,
+    "categoryName": "Gaming Consoles",
+    "specifications": [
+      {
+        "name": "Color",
+        "value": "White"
+      },
+      {
+        "name": "Storage",
+        "value": "1TB SSD"
+      }
+    ],
+    "isActive": true,
+    "createdAt": null,
+    "updatedAt": null
+  },
+  {
+    "id": null,
+    "name": "Xbox Series X",
+    "description": "Microsoft’s flagship gaming console with 4K support",
+    "thumbnail": "https://example.com/images/xboxseriesx-thumb.jpg",
+    "images": [
+      "https://example.com/images/xboxseriesx-1.jpg",
+      "https://example.com/images/xboxseriesx-2.jpg"
+    ],
+    "price": 499.99,
+    "quantity": 35,
+    "categoryId": null,
+    "categoryName": "Gaming Consoles",
+    "specifications": [
+      {
+        "name": "Color",
+        "value": "Black"
+      },
+      {
+        "name": "Storage",
+        "value": "1TB SSD"
+      }
+    ],
+    "isActive": true,
+    "createdAt": null,
+    "updatedAt": null
+  },
+  {
+    "id": null,
+    "name": "Nintendo Switch OLED",
+    "description": "Hybrid gaming console with vibrant OLED display",
+    "thumbnail": "https://example.com/images/switch-oled-thumb.jpg",
+    "images": [
+      "https://example.com/images/switch-oled-1.jpg",
+      "https://example.com/images/switch-oled-2.jpg"
+    ],
+    "price": 349.99,
+    "quantity": 50,
+    "categoryId": null,
+    "categoryName": "Gaming Consoles",
+    "specifications": [
+      {
+        "name": "Color",
+        "value": "White"
+      },
+      {
+        "name": "Storage",
+        "value": "64GB"
+      }
+    ],
+    "isActive": true,
+    "createdAt": null,
+    "updatedAt": null
+  },
+  {
+    "id": null,
+    "name": "Logitech MX Master 3S",
+    "description": "Advanced wireless mouse with ergonomic design",
+    "thumbnail": "https://example.com/images/mxmaster3s-thumb.jpg",
+    "images": [
+      "https://example.com/images/mxmaster3s-1.jpg",
+      "https://example.com/images/mxmaster3s-2.jpg"
+    ],
+    "price": 99.99,
+    "quantity": 120,
+    "categoryId": null,
+    "categoryName": "Computer Accessories",
+    "specifications": [
+      {
+        "name": "Color",
+        "value": "Graphite"
+      },
+      {
+        "name": "Connectivity",
+        "value": "Bluetooth/USB Receiver"
+      }
+    ],
+    "isActive": true,
+    "createdAt": null,
+    "updatedAt": null
+  },
+  {
+    "id": null,
+    "name": "Razer BlackWidow V4 Pro",
+    "description": "Mechanical gaming keyboard with RGB lighting",
+    "thumbnail": "https://example.com/images/blackwidowv4-thumb.jpg",
+    "images": [
+      "https://example.com/images/blackwidowv4-1.jpg",
+      "https://example.com/images/blackwidowv4-2.jpg"
+    ],
+    "price": 229.99,
+    "quantity": 80,
+    "categoryId": null,
+    "categoryName": "Computer Accessories",
+    "specifications": [
+      {
+        "name": "Color",
+        "value": "Black"
+      },
+      {
+        "name": "Switch Type",
+        "value": "Razer Green Mechanical"
+      }
+    ],
+    "isActive": true,
+    "createdAt": null,
+    "updatedAt": null
+  },
+  {
+    "id": null,
+    "name": "Nike Air Zoom Pegasus 40",
+    "description": "Lightweight running shoes designed for comfort and speed",
+    "thumbnail": "https://example.com/images/nike-pegasus-thumb.jpg",
+    "images": [
+      "https://example.com/images/nike-pegasus-1.jpg",
+      "https://example.com/images/nike-pegasus-2.jpg"
+    ],
+    "price": 129.99,
+    "quantity": 120,
+    "categoryId": null,
+    "categoryName": "Sportswear",
+    "specifications": [
+      {
+        "name": "Color",
+        "value": "Blue"
+      },
+      {
+        "name": "Size",
+        "value": "US 10"
+      }
+    ],
+    "isActive": true,
+    "createdAt": null,
+    "updatedAt": null
+  },
+  {
+    "id": null,
+    "name": "Levi’s 501 Original Jeans",
+    "description": "Classic straight-fit denim jeans",
+    "thumbnail": "https://example.com/images/levis501-thumb.jpg",
+    "images": [
+      "https://example.com/images/levis501-1.jpg",
+      "https://example.com/images/levis501-2.jpg"
+    ],
+    "price": 89.99,
+    "quantity": 200,
+    "categoryId": null,
+    "categoryName": "Fashion",
+    "specifications": [
+      {
+        "name": "Color",
+        "value": "Dark Blue"
+      },
+      {
+        "name": "Size",
+        "value": "32x32"
+      }
+    ],
+    "isActive": true,
+    "createdAt": null,
+    "updatedAt": null
+  },
+  {
+    "id": null,
+    "name": "IKEA Malm Bed Frame",
+    "description": "Minimalist queen-size bed frame with storage drawers",
+    "thumbnail": "https://example.com/images/malm-bed-thumb.jpg",
+    "images": [
+      "https://example.com/images/malm-bed-1.jpg",
+      "https://example.com/images/malm-bed-2.jpg"
+    ],
+    "price": 399.99,
+    "quantity": 15,
+    "categoryId": null,
+    "categoryName": "Furniture",
+    "specifications": [
+      {
+        "name": "Color",
+        "value": "White"
+      },
+      {
+        "name": "Size",
+        "value": "Queen"
+      }
+    ],
+    "isActive": true,
+    "createdAt": null,
+    "updatedAt": null
+  },
+  {
+    "id": null,
+    "name": "KitchenAid Stand Mixer",
+    "description": "Versatile mixer for baking and cooking",
+    "thumbnail": "https://example.com/images/kitchenaid-thumb.jpg",
+    "images": [
+      "https://example.com/images/kitchenaid-1.jpg",
+      "https://example.com/images/kitchenaid-2.jpg"
+    ],
+    "price": 499.99,
+    "quantity": 25,
+    "categoryId": null,
+    "categoryName": "Home Appliances",
+    "specifications": [
+      {
+        "name": "Color",
+        "value": "Red"
+      },
+      {
+        "name": "Capacity",
+        "value": "5 Quart"
+      }
+    ],
+    "isActive": true,
+    "createdAt": null,
+    "updatedAt": null
+  },
+  {
+    "id": null,
+    "name": "Chanel No. 5 Eau de Parfum",
+    "description": "Iconic fragrance with timeless elegance",
+    "thumbnail": "https://example.com/images/chanel5-thumb.jpg",
+    "images": [
+      "https://example.com/images/chanel5-1.jpg",
+      "https://example.com/images/chanel5-2.jpg"
+    ],
+    "price": 159.99,
+    "quantity": 60,
+    "categoryId": null,
+    "categoryName": "Beauty",
+    "specifications": [
+      {
+        "name": "Volume",
+        "value": "100ml"
+      },
+      {
+        "name": "Type",
+        "value": "Eau de Parfum"
+      }
+    ],
+    "isActive": true,
+    "createdAt": null,
+    "updatedAt": null
+  },
+  {
+    "id": null,
+    "name": "Ray-Ban Aviator Sunglasses",
+    "description": "Classic aviator style with UV protection",
+    "thumbnail": "https://example.com/images/rayban-aviator-thumb.jpg",
+    "images": [
+      "https://example.com/images/rayban-aviator-1.jpg",
+      "https://example.com/images/rayban-aviator-2.jpg"
+    ],
+    "price": 149.99,
+    "quantity": 75,
+    "categoryId": null,
+    "categoryName": "Accessories",
+    "specifications": [
+      {
+        "name": "Color",
+        "value": "Gold Frame"
+      },
+      {
+        "name": "Lens",
+        "value": "Green"
+      }
+    ],
+    "isActive": true,
+    "createdAt": null,
+    "updatedAt": null
+  },
+  {
+    "id": null,
+    "name": "Adidas Soccer Ball",
+    "description": "Official size 5 training ball",
+    "thumbnail": "https://example.com/images/adidas-ball-thumb.jpg",
+    "images": [
+      "https://example.com/images/adidas-ball-1.jpg",
+      "https://example.com/images/adidas-ball-2.jpg"
+    ],
+    "price": 39.99,
+    "quantity": 150,
+    "categoryId": null,
+    "categoryName": "Sports Equipment",
+    "specifications": [
+      {
+        "name": "Color",
+        "value": "White/Black"
+      },
+      {
+        "name": "Size",
+        "value": "5"
+      }
+    ],
+    "isActive": true,
+    "createdAt": null,
+    "updatedAt": null
+  },
+  {
+    "id": null,
+    "name": "Harry Potter and the Sorcerer’s Stone",
+    "description": "Fantasy novel by J.K. Rowling",
+    "thumbnail": "https://example.com/images/hp1-thumb.jpg",
+    "images": [
+      "https://example.com/images/hp1-1.jpg",
+      "https://example.com/images/hp1-2.jpg"
+    ],
+    "price": 19.99,
+    "quantity": 300,
+    "categoryId": null,
+    "categoryName": "Books",
+    "specifications": [
+      {
+        "name": "Format",
+        "value": "Hardcover"
+      },
+      {
+        "name": "Pages",
+        "value": "320"
+      }
+    ],
+    "isActive": true,
+    "createdAt": null,
+    "updatedAt": null
+  },
+  {
+    "id": null,
+    "name": "Nespresso Vertuo Coffee Machine",
+    "description": "Automatic coffee maker with capsule system",
+    "thumbnail": "https://example.com/images/nespresso-thumb.jpg",
+    "images": [
+      "https://example.com/images/nespresso-1.jpg",
+      "https://example.com/images/nespresso-2.jpg"
+    ],
+    "price": 249.99,
+    "quantity": 50,
+    "categoryId": null,
+    "categoryName": "Kitchen Appliances",
+    "specifications": [
+      {
+        "name": "Color",
+        "value": "Black"
+      },
+      {
+        "name": "Capacity",
+        "value": "1.2L"
+      }
+    ],
+    "isActive": true,
+    "createdAt": null,
+    "updatedAt": null
+  },
+  {
+    "id": null,
+    "name": "Organic Dark Chocolate Bar",
+    "description": "Premium 70% cocoa chocolate bar",
+    "thumbnail": "https://example.com/images/darkchoco-thumb.jpg",
+    "images": [
+      "https://example.com/images/darkchoco-1.jpg",
+      "https://example.com/images/darkchoco-2.jpg"
+    ],
+    "price": 4.99,
+    "quantity": 500,
+    "categoryId": null,
+    "categoryName": "Food & Beverages",
+    "specifications": [
+      {
+        "name": "Weight",
+        "value": "100g"
+      },
+      {
+        "name": "Type",
+        "value": "Dark Chocolate"
+      }
+    ],
+    "isActive": true,
+    "createdAt": null,
+    "updatedAt": null
+  }
+]

@@ -1,27 +1,22 @@
 package com.capstone.ecommerce.product.service;
 
 import com.capstone.ecommerce.product.dto.ProductDto;
-import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch.core.SearchRequest;
-import co.elastic.clients.elasticsearch.core.SearchResponse;
-import co.elastic.clients.elasticsearch.core.search.Hit;
-import co.elastic.clients.elasticsearch._types.query_dsl.Query;
-import com.capstone.ecommerce.product.exceptions.ProductElasticSearchSaveException;
+import com.capstone.ecommerce.product.exceptions.CategoryNotFoundException;
 import com.capstone.ecommerce.product.exceptions.ProductNotFoundException;
+import com.capstone.ecommerce.product.exceptions.ProductOutOfStockException;
 import com.capstone.ecommerce.product.repository.ProductRepository;
 import com.capstone.ecommerce.product.repository.CategoryRepository;
 import com.capstone.ecommerce.product.entity.Product;
 import com.capstone.ecommerce.product.entity.Category;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
-
 
 
 @Slf4j
@@ -29,7 +24,7 @@ import java.util.stream.Collectors;
 @Service
 public class ProductService {
 
-    private final ElasticsearchClient elasticsearchClient;
+    private final ElasticSearchService searchService;
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
 
@@ -39,34 +34,18 @@ public class ProductService {
         log.info("Searching products with keyword: {}", keyword);
 
         try {
-            Query matchQuery = Query.of(q -> q
-                .match(m -> m
-                    .field("name")
-                    .query(keyword)
-                    .fuzziness("AUTO")
-                )
-            );
+            return searchService.searchByKeyword(keyword);
 
-            SearchRequest request = SearchRequest.of(s -> s
-                .index("products")
-                .query(matchQuery)
-            );
-
-            SearchResponse<ProductDto> response = elasticsearchClient.search(request, ProductDto.class);
-            return response.hits().hits().stream()
-                    .map(Hit::source)
-                    .collect(Collectors.toList());
         } catch (IOException e) {
             // Handle exception as needed
             return List.of();
         }
     }
 
+    @Transactional(readOnly = true)
     public ProductDto getProduct(Long productId) {
-        var product = productRepository.findById(productId)
+        var product = productRepository.findProductById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
-
-
         return ProductDto.fromEntity(product);
     }
 
@@ -80,40 +59,27 @@ public class ProductService {
         product.setUpdatedAt(now);
 
         // Fetch and set managed Category entity
+        Category category;
         if (productDto.categoryId() != null) {
-            Category category = categoryRepository.findById(product.getCategory().getId())
-                .orElseGet(() -> {
-                    Category newCategory = new Category();
-                    newCategory.setName(product.getCategory().getName());
-                    return categoryRepository.save(newCategory);
-                });
-            product.setCategory(category);
-        } else if (productDto.categoryName() != null) {
-            Category category = categoryRepository.findByName(productDto.categoryName())
+            category = categoryRepository.findById(product.getCategory().getId())
+                .orElseThrow(() -> new CategoryNotFoundException(productDto.categoryId()));
+        } else if (Strings.isNotBlank(productDto.categoryName())) {
+            category = categoryRepository.findByName(productDto.categoryName())
                     .orElseGet(() -> {
                         Category newCategory = new Category();
                         newCategory.setName(productDto.categoryName());
                         return categoryRepository.save(newCategory);
                     });
-            product.setCategory(category);
         } else {
             throw new IllegalArgumentException("Category must be provided");
         }
 
+        product.setCategory(category);
+
         var savedProduct = productRepository.save(product);
         ProductDto savedDto = ProductDto.fromEntity(savedProduct);
 
-        // Insert into Elasticsearch
-        try {
-            elasticsearchClient.index(i -> i
-                .index("products")
-                .id(savedProduct.getId().toString())
-                .document(savedDto)
-            );
-        } catch (IOException e) {
-            // Handle exception as needed (log, rethrow, etc.)
-            throw new ProductElasticSearchSaveException(e.getMessage());
-        }
+        searchService.indexProduct(savedDto);
 
         return savedDto;
     }
@@ -121,28 +87,58 @@ public class ProductService {
     @Transactional
     public ProductDto updateProduct(ProductDto productDto) {
         Long productId = productDto.id();
-        // TODO: Update product in the database
+        var product = productRepository.findById(productId).orElseThrow();
+        product.updateFromDto(productDto);
 
-        return null;
+        if (productDto.categoryId() != null) {
+            categoryRepository.findById(productDto.categoryId()).ifPresent(product::setCategory);
+        }
+        var updatedDto = ProductDto.fromEntity(productRepository.save(product));
+        searchService.updateProductIndex(updatedDto);
+        return updatedDto;
     }
 
     @Transactional
-    public void deactivateProduct(Long productId) {
-        productRepository.findById(productId).ifPresent(product -> {
-            product.setActive(false);
-            product.setDeletedAt(LocalDateTime.now());
-            productRepository.save(product);
+    public ProductDto updateProductActiveState(Long productId, boolean activate) {
+        var product = productRepository.findById(productId)
+                        .orElseThrow(() -> new ProductNotFoundException(productId));
 
-            // Remove from Elasticsearch
-            try {
-                elasticsearchClient.delete(d -> d
-                    .index("products")
-                    .id(productId.toString())
-                );
-            } catch (IOException e) {
-                // Handle exception as needed (log, rethrow, etc.)
-                log.error("Failed to delete product from Elasticsearch: {}", e.getMessage());
-            }
-        });
+        if (activate)  {
+            log.info("Activating product with ID: {}", productId);
+            product.activate();
+        } else {
+            log.info("Deactivating product with ID: {}", productId);
+            product.deactivate();
+        }
+        var dto = ProductDto.fromEntity(productRepository.save(product));
+
+        searchService.updateProductIndex(dto);
+
+        return dto;
+    }
+
+    @Transactional
+    public void deleteProduct(Long productId) {
+        var product = productRepository.findById(productId)
+                        .orElseThrow(() -> new ProductNotFoundException(productId));
+        productRepository.delete(product);
+        searchService.deleteProductFromIndex(productId);
+    }
+
+
+    @Transactional
+    public ProductDto updateProductStock(Long productId, int newStock) {
+        var product = productRepository.findById(productId)
+                        .orElseThrow(() -> new ProductNotFoundException(productId));
+
+        if (product.getQuantity() + newStock < 0) {
+            throw new ProductOutOfStockException(productId);
+        }
+
+        product.updateQuantity(newStock);
+        var dto = ProductDto.fromEntity(productRepository.save(product));
+        searchService.updateProductIndex(dto);
+
+        return dto;
     }
 }

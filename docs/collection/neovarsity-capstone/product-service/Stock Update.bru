@@ -1,0 +1,78 @@
+meta {
+  name: Stock Update
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{base-url}}{{context}}/v1/product/stock
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "productId": "1",
+    "quantity": "-5"
+  }
+}
+
+example {
+  name: Increase
+  
+  request: {
+    url: {{base-url}}{{context}}/v1/product/stock
+    method: PUT
+    mode: json
+    body:json: {
+      {
+        "productId": "1",
+        "quantity": "5"
+      }
+    }
+  }
+  
+  response: {
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}
+
+example {
+  name: Decrease
+  
+  request: {
+    url: {{base-url}}{{context}}/v1/product/stock
+    method: PUT
+    mode: json
+    body:json: {
+      {
+        "productId": "1",
+        "quantity": "-5"
+      }
+    }
+  }
+  
+  response: {
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}
