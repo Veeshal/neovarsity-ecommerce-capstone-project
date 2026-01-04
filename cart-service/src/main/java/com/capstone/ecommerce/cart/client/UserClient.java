@@ -22,7 +22,7 @@ public class UserClient {
         log.info("Fetching user with ID: {}", userId);
 
         return restClient.get()
-                .uri("/api/v1/user/{id}", userId)
+                .uri("/v1/users")
                 .retrieve()
                 .body(User.class);
     }

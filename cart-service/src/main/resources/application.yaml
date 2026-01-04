@@ -63,11 +63,11 @@ management:
 ecom:
   client:
     order-service:
-      url: ${ORDER_SERVICE_URL:http://localhost:8000/order-service}
+      url: ${ORDER_SERVICE_URL:http://localhost:8000/order-service}/api
     product-service:
-      url: ${PRODUCT_SERVICE_URL:http://localhost:8000/product-service}
+      url: ${PRODUCT_SERVICE_URL:http://localhost:8000/product-service}/api
     user-service:
-      url: ${USER_SERVICE_URL:http://localhost:8000/user-service}
+      url: ${USER_SERVICE_URL:http://localhost:8000/user-service}/api
   claims:
     role: ${JWT_CLAIM_ROLE:role}
     userId: ${JWT_CLAIM_USER_ID:userId}

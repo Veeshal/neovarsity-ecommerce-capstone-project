@@ -21,7 +21,7 @@ public class OrderClient {
 
         var request = new OrderCreationRequestDto(userId, addressId, paymentMethodId, cart);
         try {
-            var response = restTemplate.postForEntity(orderServiceBaseUrl + "/api/v1/order", request, Order.class);
+            var response = restTemplate.postForEntity(orderServiceBaseUrl + "/v1/order", request, Order.class);
             return response.getBody();
         } catch (Exception e) {
             throw new RuntimeException("Failed to create order: " + e.getMessage(), e);

@@ -36,6 +36,7 @@ public class RestClientConfig {
     public RestClient userRestClient() {
         return RestClient.builder()
                 .baseUrl(userServiceBaseUrl) // Base URL for User Service
+                .requestInterceptor(authInterceptor())
                 .build();
     }
 
@@ -43,6 +44,7 @@ public class RestClientConfig {
     public RestClient orderRestClient() {
         return RestClient.builder()
                 .baseUrl(orderServiceBaseUrl) // Base URL for Order Service
+                .requestInterceptor(authInterceptor())
                 .build();
     }
 

@@ -22,7 +22,7 @@ public class ProductClient {
         log.info("Fetching product with ID: {}", productId);
 
         return restClient.get()
-                .uri("/api/v1/product/{id}", productId)
+                .uri("/v1/product/{id}", productId)
                 .retrieve()
                 // TODO: Improve error handling
                 .body(Product.class);
