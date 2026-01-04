@@ -29,6 +29,12 @@ public class CartController {
     @Value("${ecom.claims.userId}")
     private String USER_ID_CLAIM;
 
+    @Value("${ecom.claims.email}")
+    private String EMAIL_CLAIM;
+
+    @Value("${ecom.claims.role}")
+    private String ROLE_CLAIM;
+
     @GetMapping
     public Cart getCart(@AuthenticationPrincipal Jwt jwt) {
         Long userId = jwt.getClaim(USER_ID_CLAIM);

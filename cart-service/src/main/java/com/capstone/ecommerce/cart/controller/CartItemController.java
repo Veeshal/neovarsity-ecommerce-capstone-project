@@ -3,7 +3,6 @@ package com.capstone.ecommerce.cart.controller;
 import com.capstone.ecommerce.cart.dto.CartItemRequest;
 import com.capstone.ecommerce.cart.entity.Cart;
 import com.capstone.ecommerce.cart.service.CartService;
-import com.nimbusds.jwt.JWT;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +26,12 @@ public class CartItemController {
 
     @Value("${ecom.claims.userId}")
     private String USER_ID_CLAIM;
+
+    @Value("${ecom.claims.email}")
+    private String EMAIL_CLAIM;
+
+    @Value("${ecom.claims.role}")
+    private String ROLE_CLAIM;
 
     @PostMapping
     public Cart addItemToCart(@AuthenticationPrincipal Jwt jwt, @RequestBody CartItemRequest request) {
