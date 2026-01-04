@@ -2,10 +2,14 @@ package com.capstone.ecommerce.cart.service;
 
 import com.capstone.ecommerce.cart.client.OrderClient;
 import com.capstone.ecommerce.cart.client.ProductClient;
+import com.capstone.ecommerce.cart.client.UserClient;
 import com.capstone.ecommerce.cart.entity.Cart;
 import com.capstone.ecommerce.cart.entity.CartItem;
 import com.capstone.ecommerce.cart.entity.CheckoutInfo;
-import com.capstone.ecommerce.cart.entity.Product;
+import com.capstone.ecommerce.cart.exceptions.EmptyCartException;
+import com.capstone.ecommerce.cart.exceptions.InvalidAddressException;
+import com.capstone.ecommerce.cart.exceptions.InvalidPaymentMethodException;
+import com.capstone.ecommerce.cart.exceptions.InvalidRequestedQuantityException;
 import com.capstone.ecommerce.cart.repository.CartRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -24,6 +30,7 @@ public class CartService {
 
     private final OrderClient orderClient;
     private final ProductClient productClient;
+    private final UserClient userClient;
     private final CartRepository cartRepository;
 
     @Transactional
@@ -37,22 +44,34 @@ public class CartService {
             return newCart;
         });
 
+        var product = productClient.getProductById(productId);
+
         // Add or update item in cart
-        boolean found = false;
-        for (CartItem item : cart.getItems()) {
-            if (item.getProduct().getId().equals(productId)) {
-                item.setQuantity(item.getQuantity() + quantity);
-                found = true;
-                break;
+        var cartItem = cart.getItems()
+                .stream()
+                .filter(item -> Objects.equals(item.getProduct().getId(), productId))
+                .findFirst();
+
+        if (cartItem.isEmpty()) {
+
+            if (quantity > product.getQuantity()) {
+                throw InvalidRequestedQuantityException.getInstance(quantity, productId);
             }
-        }
-        if (!found) {
-            var product = productClient.getProductById(productId);
             CartItem newItem = new CartItem();
             newItem.setProduct(product);
             newItem.setQuantity(quantity);
             cart.getItems().add(newItem);
+
+        } else {
+
+            var item = cartItem.get();
+            if (item.getQuantity() + quantity > product.getQuantity()) {
+                throw InvalidRequestedQuantityException
+                        .getInstance(item.getQuantity() + quantity, productId);
+            }
+            item.setQuantity(item.getQuantity() + quantity);
         }
+
 
         cartRepository.save(cart);
         return cart;
@@ -65,15 +84,18 @@ public class CartService {
         Cart cart = cartRepository.findByUserId(userId).orElseThrow(() ->
                 new IllegalArgumentException("Cart not found for user " + userId));
 
-        for (CartItem item : cart.getItems()) {
-            if (item.getProduct().getId().equals(productId)) {
-                item.setQuantity(quantity);
-                cartRepository.save(cart);
-                return cart;
-            }
+        var cartItem = cart.getItems().stream()
+                .filter(item -> Objects.equals(item.getProduct().getId(), productId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Product not found in cart"));
+
+        var product = productClient.getProductById(productId);
+        if (quantity > product.getQuantity()) {
+            throw InvalidRequestedQuantityException.getInstance(quantity, productId);
         }
 
-        throw new IllegalArgumentException("Product not found in cart");
+        cartItem.setQuantity(quantity);
+        return cartRepository.save(cart);
     }
 
     @CachePut(value = "cart", key = "#userId")
@@ -97,13 +119,26 @@ public class CartService {
     }
 
     public CheckoutInfo checkout(Long userId, Long addressId, int paymentMethodId) {
-        // validate card items
-        // TODO: Implement validation logic for cart items, e.g., check stock availability
-        // TODO: Handle error cases, such as empty cart or invalid payment method
 
+        // Validate payment method
+        var paymentMethods = List.of(4, 5, 6);
+        if (!paymentMethods.contains(paymentMethodId)) {
+            throw InvalidPaymentMethodException.forPaymentMethodId(paymentMethodId);
+        }
+
+        // validate cart
+        var cart = cartRepository.findByUserId(userId).orElse(null);
+        if (cart == null || cart.getItems().isEmpty()) {
+            throw EmptyCartException.forUserId(userId);
+        }
+
+        // validate address
+        if (!userClient.isValidAddress(userId, addressId)) {
+            throw InvalidAddressException.forAddressId(addressId, userId);
+        }
 
         // generate order
-        var order = orderClient.createOrder(userId, addressId, paymentMethodId, getCart(userId));
+        var order = orderClient.createOrder(userId, addressId, paymentMethodId, cart);
 
         return new CheckoutInfo(
                 order.orderId(),

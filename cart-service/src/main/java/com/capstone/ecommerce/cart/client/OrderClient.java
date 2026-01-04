@@ -17,7 +17,7 @@ public class OrderClient {
 
     private final RestTemplate restTemplate;
 
-    public Order createOrder(Long userId, Long addressId, int paymentMethodId, Cart cart) {
+    public Order createOrder(Long userId, Long addressId, Integer paymentMethodId, Cart cart) {
 
         var request = new OrderCreationRequestDto(userId, addressId, paymentMethodId, cart);
         try {
