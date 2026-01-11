@@ -37,5 +37,9 @@ Order -> Kafka: publish(order.placed)
 
 Kafka -> Cart: consume(order.placed)
 Cart -> Cart: clearCart()
+Kafka -> Notification: consume(order.placed)
+Notification -> Frontend: sendOrderConfirmation()
+Kafka -> Product: consume(order.placed)
+Product -> Product: reduceStock(\n\tcartItems\n)
 
 @enduml
