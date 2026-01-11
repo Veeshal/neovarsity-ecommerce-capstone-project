@@ -1,5 +1,6 @@
 package com.capstone.ecommerce.order.entity;
 
+import com.capstone.ecommerce.order.exception.InvalidPaymentMethodException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -16,10 +17,19 @@ public enum PaymentMethod {
     private final String code;
     private final String description;
 
+
+    public static PaymentMethod from(int id) {
+        return Arrays.stream(PaymentMethod.values())
+                .filter(pm -> pm.id == id)
+                .findFirst()
+                .orElseThrow(() -> new InvalidPaymentMethodException(String.valueOf(id)));
+    }
+
     public static PaymentMethod from(String code) {
         return Arrays.stream(PaymentMethod.values())
                 .filter(pm -> pm.code.equalsIgnoreCase(code))
-                .findFirst().orElseThrow(() -> new IllegalArgumentException("Invalid payment method: " + code));
+                .findFirst()
+                .orElseThrow(() -> new InvalidPaymentMethodException(code));
     }
 
     boolean isValidPaymentMethod(int id) {

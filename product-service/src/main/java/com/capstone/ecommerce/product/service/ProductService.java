@@ -1,5 +1,6 @@
 package com.capstone.ecommerce.product.service;
 
+import com.capstone.ecommerce.product.dto.ValidateCartItem;
 import com.capstone.ecommerce.product.dto.ProductDto;
 import com.capstone.ecommerce.product.exceptions.CategoryNotFoundException;
 import com.capstone.ecommerce.product.exceptions.ProductNotFoundException;
@@ -140,5 +141,20 @@ public class ProductService {
         searchService.updateProductIndex(dto);
 
         return dto;
+    }
+
+    public void validateProductStock(List<ValidateCartItem> cartItems) {
+
+        List<Long> productIds = cartItems.stream().map(ValidateCartItem::productId).toList();
+        productRepository.findAllById(productIds).forEach(product -> {
+            var requestedQty = cartItems.stream()
+                    .filter(item -> item.productId().equals(product.getId()))
+                    .map(ValidateCartItem::quantity)
+                    .findFirst()
+                    .orElse(0);
+            if (product.getQuantity() < requestedQty) {
+                throw new ProductOutOfStockException(product.getId());
+            }
+        });
     }
 }

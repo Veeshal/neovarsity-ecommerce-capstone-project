@@ -8,19 +8,18 @@ import com.capstone.ecommerce.order.entity.Order;
 import com.capstone.ecommerce.order.entity.OrderItem;
 import com.capstone.ecommerce.order.entity.OrderStatus;
 import com.capstone.ecommerce.order.entity.PaymentMethod;
+import com.capstone.ecommerce.order.exception.EmptyCartException;
 import com.capstone.ecommerce.order.repository.OrderItemRepository;
 import com.capstone.ecommerce.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -34,12 +33,12 @@ public class OrderService {
     private final ProductClient productClient;
 
     @Transactional
-    public Order placeOrder(Long userId, Long addressId, String paymentMethod, Cart cart) {
+    public Order placeOrder(Long userId, Long addressId, int paymentMethodId, Cart cart) {
 
         // Validate product availability
         productClient.validateAllProducts(cart);
 
-        var payment = PaymentMethod.from(paymentMethod);
+        var payment = PaymentMethod.from(paymentMethodId);
 
 
         // Create order and order items
@@ -52,7 +51,7 @@ public class OrderService {
         BigDecimal totalAmount = BigDecimal.ZERO;
 
         if (cart.items() == null || cart.items().isEmpty()) {
-            throw new IllegalArgumentException("Cart is empty. Cannot place order.");
+            throw new EmptyCartException();
         }
 
         for (CartItem item : cart.items()) {
@@ -71,10 +70,6 @@ public class OrderService {
             order.addItem(orderItem);
         }
 
-        if (totalAmount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Total amount must be greater than zero.");
-        }
-
         order.setTotalAmount(totalAmount);
 
         // Save order to the database
@@ -84,14 +79,14 @@ public class OrderService {
         var orderId = order.getOrderId();
         log.info("Order created with ID: {}", orderId);
 
-        if (payment != PaymentMethod.CASH_ON_DELIVERY) {
-            var paymentLink = paymentClient.generatePayment(userId, orderId, paymentMethod, totalAmount);
-            order.setPaymentLink(paymentLink);
-            log.info("Payment link generated: {}", paymentLink);
-        } else {
+        if (payment == PaymentMethod.CASH_ON_DELIVERY) {
             order.setStatus(OrderStatus.PLACED);
-
+            return order;
         }
+
+        var paymentLink = paymentClient.generatePayment(order, payment, totalAmount);
+        order.setPaymentLink(paymentLink.link());
+        log.info("Payment link generated: {}", paymentLink);
 
         return order;
     }

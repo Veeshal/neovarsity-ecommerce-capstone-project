@@ -6,6 +6,7 @@ import com.capstone.ecommerce.order.dto.OrderItemDto;
 import com.capstone.ecommerce.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
@@ -20,14 +21,31 @@ public class OrderController {
 
     private final OrderService orderService;
 
+    @Value("${ecom.claims.userId}")
+    private String USER_ID_CLAIM;
+
+    @Value("${ecom.claims.email}")
+    private String EMAIL_CLAIM;
+
+    @Value("${ecom.claims.role}")
+    private String ROLE_CLAIM;
+
     @PostMapping
-    public OrderDto placeOrder(@RequestBody CreateOrderRequest request) {
-        var order = orderService.placeOrder(request.userId(), request.addressId(), request.paymentMethod(), request.cart());
+    public OrderDto placeOrder(@AuthenticationPrincipal Jwt jwt,
+                               @RequestBody CreateOrderRequest request) {
+        var userId = getUserIdFromToken(jwt);
+        var order = orderService.placeOrder(
+                userId,
+                request.addressId(),
+                request.paymentMethodId(),
+                request.cart());
+
         return OrderDto.from(order);
     }
 
     @GetMapping("{orderId}")
-    public OrderDto getOrder(@AuthenticationPrincipal Jwt jwt, @PathVariable("orderId") String orderId) {
+    public OrderDto getOrder(@PathVariable("orderId") String orderId,
+                             @AuthenticationPrincipal Jwt jwt) {
         var userId = getUserIdFromToken(jwt);
         var order = orderService.getOrder(userId, orderId);
         return OrderDto.from(order);
@@ -46,7 +64,8 @@ public class OrderController {
 
     @GetMapping("{orderId}/items")
     public List<OrderItemDto> getOrderItems(
-            @AuthenticationPrincipal Jwt jwt, @PathVariable("orderId") String orderId,
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable("orderId") String orderId,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
 
@@ -56,11 +75,6 @@ public class OrderController {
     }
 
     private Long getUserIdFromToken(Jwt jwt) {
-        log.info("jwt {}", jwt);
-
-//        jwt.getHeaders().forEach((s, o) -> log.info("Headers >> {}: {}", s, o));
-//        jwt.getClaims().forEach((s, o) -> log.info("Claims >> {}: {}", s, o));
-
-        return  (Long) jwt.getClaims().get("userId");
+        return jwt.getClaim(USER_ID_CLAIM);
     }
 }

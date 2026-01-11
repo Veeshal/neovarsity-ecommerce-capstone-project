@@ -1,9 +1,8 @@
 package com.capstone.ecommerce.order.dto;
 
 public record CreateOrderRequest(
-        Long userId,
         Long addressId,
-        String paymentMethod,
+        int paymentMethodId,
         Cart cart
 ) {
 }

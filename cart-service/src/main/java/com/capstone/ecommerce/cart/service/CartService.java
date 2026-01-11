@@ -138,7 +138,7 @@ public class CartService {
         }
 
         // generate order
-        var order = orderClient.createOrder(userId, addressId, paymentMethodId, cart);
+        var order = orderClient.createOrder(addressId, paymentMethodId, cart);
 
         return new CheckoutInfo(
                 order.orderId(),

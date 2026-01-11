@@ -3,29 +3,28 @@ package com.capstone.ecommerce.cart.client;
 import com.capstone.ecommerce.cart.dto.OrderCreationRequestDto;
 import com.capstone.ecommerce.cart.entity.Cart;
 import com.capstone.ecommerce.cart.entity.Order;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
-@RequiredArgsConstructor
 @Component
 public class OrderClient {
 
-    @Value("${ecom.client.order-service.url}")
-    private String orderServiceBaseUrl;
+    private final RestClient restClient;
 
-    private final RestTemplate restTemplate;
+    public OrderClient(@Qualifier("orderRestClient") RestClient restClient) {
+        this.restClient = restClient;
+    }
 
-    public Order createOrder(Long userId, Long addressId, Integer paymentMethodId, Cart cart) {
+    public Order createOrder(Long addressId, Integer paymentMethodId, Cart cart) {
 
-        var request = new OrderCreationRequestDto(userId, addressId, paymentMethodId, cart);
-        try {
-            var response = restTemplate.postForEntity(orderServiceBaseUrl + "/v1/order", request, Order.class);
-            return response.getBody();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to create order: " + e.getMessage(), e);
-        }
+        var request = new OrderCreationRequestDto(addressId, paymentMethodId, cart);
+
+        return restClient.post()
+                .uri("/v1/orders")
+                .body(request)
+                .retrieve()
+                .body(Order.class);
     }
 
 }

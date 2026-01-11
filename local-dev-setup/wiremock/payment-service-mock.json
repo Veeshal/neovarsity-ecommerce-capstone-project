@@ -1,3 +1,21 @@
 {
-  "mappings": []
+  "mappings": [
+    {
+      "request": {
+        "method": "POST",
+        "url": "/api/v1/payments"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "link": "http://example.com/payment/123456789",
+          "expiresAt": "1000",
+          "redirectUrl": "http://example.com/payment/success"
+        }
+      }
+    }
+  ]
 }

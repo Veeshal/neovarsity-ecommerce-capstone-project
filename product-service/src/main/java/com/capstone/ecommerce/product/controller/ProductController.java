@@ -2,6 +2,7 @@ package com.capstone.ecommerce.product.controller;
 
 import com.capstone.ecommerce.product.dto.ProductDto;
 import com.capstone.ecommerce.product.dto.QuantityUpdateDto;
+import com.capstone.ecommerce.product.dto.ValidateStockAvailabilityRequest;
 import com.capstone.ecommerce.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,11 @@ public class ProductController {
     @GetMapping("{id}")
     public ProductDto getProduct(@PathVariable(name = "id") Long productId) {
         return productService.getProduct(productId);
+    }
+
+    @PostMapping("/validate-stock")
+    public void validateProductStock(@RequestBody ValidateStockAvailabilityRequest request) {
+        productService.validateProductStock(request.cartItems());
     }
 
 

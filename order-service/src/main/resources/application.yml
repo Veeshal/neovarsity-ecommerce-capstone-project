@@ -1,3 +1,44 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  info:
+    env:
+      enabled: true
+    java:
+      enabled: true
+    os:
+      enabled: true
+    build:
+      enabled: true
+
+ecom:
+  client:
+    payment-service:
+      url: ${PAYMENT_SERVICE_URL:http://localhost:8000/payment-service}/api
+    product-service:
+      url: ${PRODUCT_SERVICE_URL:http://localhost:8000/product-service}/api
+    user-service:
+      url: ${USER_SERVICE_URL:http://localhost:8000/user-service}/api
+  claims:
+    role: ${JWT_CLAIM_ROLE:role}
+    userId: ${JWT_CLAIM_USER_ID:userId}
+    email: ${JWT_CLAIM_EMAIL:email}
+  kafka:
+    topics:
+      order-placed: order-placed-topic
+
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.springframework.boot.autoconfigure: off
+    org.springframework.web.servlet.DispatcherServlet: DEBUG
+    org.hibernate.orm.connections.pooling: off
+    org.springframework.security: DEBUG
+
+
 server:
   error:
     include-message: always
@@ -30,5 +71,16 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8000
-          jwk-set-uri: http://localhost:8000/user-service/api/.well-known/jwks.json
+          issuer-uri: ${AUTH_ISSUER_URI:http://localhost:8000}
+          jwk-set-uri: ${AUTH_JWK_ISSUER_URI:http://localhost:8000/user-service/api}/.well-known/jwks.json
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: cart-service-group
+      auto-offset-reset: latest
+    properties:
+      security.protocol: SSL
+      ssl.truststore.type: PEM
+      ssl.truststore.location: ${KAFKA_TRUSTSTORE_PATH}
+      ssl.keystore.type: PEM
+      ssl.keystore.location: ${KAFKA_KEYSTORE_PATH}
