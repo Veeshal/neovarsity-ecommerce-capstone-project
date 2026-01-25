@@ -6,7 +6,11 @@ ecom:
   razorpay:
     key: ${RAZORPAY_KEY:00000000000000000000000}
     secret_key: ${RAZORPAY_SECRET_KEY:00000000000000000000000}
+    webhook_secret: ${RAZORPAY_WHSECRET:whsec_00000000000000000000000000000}
   payment_redirect_url: ${PAYMENT_REDIRECT_URL:http://localhost:8000/payment-redirect}
+  kafka:
+    topics:
+      payment: payment-topic
 
 server:
   error:

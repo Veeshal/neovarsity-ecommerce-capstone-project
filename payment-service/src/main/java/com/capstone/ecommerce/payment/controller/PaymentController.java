@@ -28,7 +28,9 @@ public class PaymentController {
         return new PaymentLinkGenerateResponse(
                 paymentLinkInfo.link(),
                 paymentLinkInfo.expiresAt(),
-                paymentLinkInfo.redirectUrl());
+                paymentLinkInfo.redirectUrl(),
+                paymentLinkInfo.paymentId(),
+                paymentLinkInfo.orderId());
     }
 
     @PostMapping("/webhook/stripe")

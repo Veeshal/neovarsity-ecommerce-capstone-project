@@ -31,10 +31,10 @@ public class OrderController {
     private String ROLE_CLAIM;
 
     @PostMapping
-    public OrderDto placeOrder(@AuthenticationPrincipal Jwt jwt,
-                               @RequestBody CreateOrderRequest request) {
+    public OrderDto initiateOrder(@AuthenticationPrincipal Jwt jwt,
+                                  @RequestBody CreateOrderRequest request) {
         var userId = getUserIdFromToken(jwt);
-        var order = orderService.placeOrder(
+        var order = orderService.initiateOrder(
                 userId,
                 request.addressId(),
                 request.paymentMethodId(),

@@ -28,6 +28,7 @@ ecom:
   kafka:
     topics:
       order-placed: order-placed-topic
+      payment: payment-topic
 
 
 logging:

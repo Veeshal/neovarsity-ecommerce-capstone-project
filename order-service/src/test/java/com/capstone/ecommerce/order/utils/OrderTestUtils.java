@@ -22,6 +22,6 @@ public class OrderTestUtils {
     public static PaymentLinkGenerateResponse createPaymentLinkResponse() {
         return new PaymentLinkGenerateResponse("http://payment-link.com",
                 System.currentTimeMillis() + 3600000,
-                "http://redirect-url.com");
+                "http://redirect-url.com", "payment123", "order123");
     }
 }

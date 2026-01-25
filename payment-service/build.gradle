@@ -26,6 +26,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${swagger_version}"
+    implementation 'org.springframework.kafka:spring-kafka'
 
     implementation "com.stripe:stripe-java:29.2.0"
     implementation 'com.razorpay:razorpay-java:1.4.8'

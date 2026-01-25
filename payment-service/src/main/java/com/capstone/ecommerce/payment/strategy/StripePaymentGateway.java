@@ -1,6 +1,8 @@
 package com.capstone.ecommerce.payment.strategy;
 
 import com.capstone.ecommerce.payment.dto.Item;
+import com.capstone.ecommerce.payment.dto.PaymentEvent;
+import com.capstone.ecommerce.payment.dto.PaymentEventStatus;
 import com.capstone.ecommerce.payment.dto.PaymentLinkInfo;
 import com.capstone.ecommerce.payment.exceptions.PaymentLinkGenerationException;
 import com.stripe.exception.SignatureVerificationException;
@@ -10,13 +12,16 @@ import com.stripe.model.Event;
 import com.stripe.model.checkout.Session;
 import com.stripe.net.Webhook;
 import com.stripe.param.checkout.SessionCreateParams;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Slf4j
+@RequiredArgsConstructor
 @Component(PaymentGatewayStrategy.PAYMENT_GATEWAY_STRIPE)
 public class StripePaymentGateway implements PaymentGatewayStrategy {
 
@@ -25,6 +30,11 @@ public class StripePaymentGateway implements PaymentGatewayStrategy {
 
     @Value("${ecom.payment_redirect_url}")
     private String REDIRECT_URL;
+
+    @Value("${ecom.kafka.topics.payment}")
+    private String PAYMENT_TOPIC;
+
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public PaymentLinkInfo createPaymentLink(String orderId, List<Item> items, String currency)
             throws PaymentLinkGenerationException {
@@ -48,6 +58,7 @@ public class StripePaymentGateway implements PaymentGatewayStrategy {
 
             var sessionCreateParams = SessionCreateParams.builder()
                     .setMode(SessionCreateParams.Mode.PAYMENT)
+                    .putMetadata("orderId", orderId)
                     .setSuccessUrl(REDIRECT_URL)
                     .setCancelUrl(REDIRECT_URL + "?canceled=true")
                     .addAllLineItem(lineItems)
@@ -55,11 +66,14 @@ public class StripePaymentGateway implements PaymentGatewayStrategy {
 
 
             var session = Session.create(sessionCreateParams);
+            var paymentIntentId = session.getPaymentIntent();
 
             return new PaymentLinkInfo(
                     session.getUrl(),
                     session.getExpiresAt(),
-                    REDIRECT_URL
+                    REDIRECT_URL,
+                    paymentIntentId,
+                    orderId
             );
         } catch (StripeException e) {
             throw new PaymentLinkGenerationException(e);
@@ -87,6 +101,10 @@ public class StripePaymentGateway implements PaymentGatewayStrategy {
                     if (session != null) {
                         log.info("Checkout completed: {}", session.getId());
                         // e.g., use session.getCustomerDetails()
+                        String orderId = session.getMetadata().get("orderId");
+                        String paymentId = session.getPaymentIntent();
+                        var paymentEvent = new PaymentEvent(orderId, paymentId, PaymentEventStatus.COMPLETED);
+                        kafkaTemplate.send(PAYMENT_TOPIC, paymentEvent);
                     }
                     break;
                 case "checkout.session.expired":
@@ -94,6 +112,10 @@ public class StripePaymentGateway implements PaymentGatewayStrategy {
                     if (expired != null) {
                         log.info("Checkout expired: {}", expired.getId());
                         // e.g., use session.getCustomerDetails()
+                        String orderId = expired.getMetadata().get("orderId");
+                        String paymentId = expired.getPaymentIntent();
+                        var paymentEvent = new PaymentEvent(orderId, paymentId, PaymentEventStatus.FAILED);
+                        kafkaTemplate.send(PAYMENT_TOPIC, paymentEvent);
                     }
                     break;
 
