@@ -72,7 +72,7 @@ public class AppUserService implements UserDetailsService {
     }
 
     @Transactional
-    public AppUser registerUser(AppUser newUser) {
+    public AppUser registerSocialUser(AppUser newUser) {
         var userOpt = appUserRepository.findByEmail(newUser.getEmail());
 
         if (userOpt.isPresent()) {

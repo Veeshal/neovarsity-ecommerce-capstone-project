@@ -45,7 +45,7 @@ public class AuthService {
             throw new IllegalArgumentException("Unsupported social provider: " + provider);
         }
         AppUser newUser = strategy.login(token);
-        var user = appUserService.registerUser(newUser);
+        var user = appUserService.registerSocialUser(newUser);
 
         return tokenService.generateToken(user);
     }
