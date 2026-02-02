@@ -78,3 +78,12 @@ management:
       enabled: true
     build:
       enabled: true
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+  kafka:
+    properties:
+      security.protocol: PLAINTEXT

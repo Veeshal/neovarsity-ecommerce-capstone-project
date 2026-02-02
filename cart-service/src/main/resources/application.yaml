@@ -85,3 +85,12 @@ logging:
     org.hibernate.orm.connections.pooling: off
     org.springframework.security: DEBUG
 
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+  kafka:
+    properties:
+      security.protocol: PLAINTEXT

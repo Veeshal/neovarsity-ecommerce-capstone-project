@@ -85,3 +85,12 @@ spring:
       ssl.truststore.location: ${KAFKA_TRUSTSTORE_PATH}
       ssl.keystore.type: PEM
       ssl.keystore.location: ${KAFKA_KEYSTORE_PATH}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+  kafka:
+    properties:
+      security.protocol: PLAINTEXT
