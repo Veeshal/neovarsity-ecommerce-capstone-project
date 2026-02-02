@@ -1,0 +1,94 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-email-template-table
+      author: vishal
+      changes:
+        - createTable:
+            tableName: email_template
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: template_name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+                  remarks: "Enum: WELCOME, ORDER_CONFIRMATION, PASSWORD_RESET"
+              - column:
+                  name: version
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: subject
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: body
+                  type: CLOB
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: BIGINT
+        - addUniqueConstraint:
+            tableName: email_template
+            columnNames: template_name, version
+            constraintName: uq_email_template_version
+
+  - changeSet:
+      id: create-sms-template-table
+      author: vishal
+      changes:
+        - createTable:
+            tableName: sms_template
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: template_name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+                  remarks: "Enum: OTP, ORDER_SHIPPED, DELIVERY_UPDATE"
+              - column:
+                  name: version
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: body
+                  type: VARCHAR(500)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: BIGINT
+        - addUniqueConstraint:
+            tableName: sms_template
+            columnNames: template_name, version
+            constraintName: uq_sms_template_version
+

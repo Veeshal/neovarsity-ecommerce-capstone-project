@@ -1,0 +1,5 @@
+# /db/changelog/db.changelog-master.yaml
+
+databaseChangeLog:
+  - includeAll:
+      path: classpath:/db/changelog/

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Slf4j
@@ -115,7 +116,8 @@ public class OrderService {
         kafkaTemplate.send(orderPlacedTopic, new OrderPlacedEvent(
                 order.getOrderId().toString(),
                 order.getUserId(),
-                order.getTotalAmount()
+                order.getTotalAmount(),
+                LocalDate.now().toString()
         ));
     }
 

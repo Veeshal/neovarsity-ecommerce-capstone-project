@@ -1,3 +1,22 @@
+aws:
+    region: ${AWS_REGION:us-east-1}
+ecom:
+  claims:
+    role: ${JWT_CLAIM_ROLE:role}
+    userId: ${JWT_CLAIM_USER_ID:userId}
+    email: ${JWT_CLAIM_EMAIL:email}
+  kafka:
+    topics:
+      order-placed: order-placed-topic
+      user-registered: user-registered-topic
+      password-reset: password-reset-topic
+  email:
+    strategy: ${EMAIL_STRATEGY:AWS_MAIL_STRATEGY} # options: smtp, aws-ses
+    sender: ${EMAIL_FROM:sample@abc.com}
+  sms:
+    strategy: ${SMS_STRATEGY:AWS_SMS_STRATEGY} # options: aws-sns, twilio
+    sender-id: ${SMS_SENDER_ID:MyApp}
+
 server:
   error:
     include-message: always
@@ -15,5 +34,47 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8080
-          jwk-set-uri: http://localhost:8080/auth/.well-known/jwks.json
+          issuer-uri: ${AUTH_ISSUER_URI:http://localhost:8000}
+          jwk-set-uri: ${AUTH_JWK_ISSUER_URI:http://localhost:8000/user-service/api}/.well-known/jwks.json
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:ecom-notification}?useSSL=false&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:mysql}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  liquibase:
+    enabled: true
+    change-log: classpath:/db/master.yaml
+    #    clear-checksums: true
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: cart-service-group
+      auto-offset-reset: latest
+    properties:
+      security.protocol: SSL
+      ssl.truststore.type: PEM
+      ssl.truststore.location: ${KAFKA_TRUSTSTORE_PATH}
+      ssl.keystore.type: PEM
+      ssl.keystore.location: ${KAFKA_KEYSTORE_PATH}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  info:
+    env:
+      enabled: true
+    java:
+      enabled: true
+    os:
+      enabled: true
+    build:
+      enabled: true

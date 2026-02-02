@@ -1,4 +1,4 @@
-package com.capstone.ecommerce.order.entity;
+package com.capstone.ecommerce.notification.model;
 
 import java.math.BigDecimal;
 
