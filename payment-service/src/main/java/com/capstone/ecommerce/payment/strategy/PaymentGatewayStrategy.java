@@ -14,5 +14,9 @@ public interface PaymentGatewayStrategy {
 
     PaymentLinkInfo createPaymentLink(String orderId, List<Item> items, String currency) throws PaymentLinkGenerationException;
 
+    void refundPayment(String paymentId);
+
+    void partialRefund(String paymentId, double amount);
+
     void handleWebhook(String payload, String signature);
 }

@@ -6,10 +6,12 @@ import com.capstone.ecommerce.payment.service.PaymentService;
 import com.capstone.ecommerce.payment.strategy.PaymentGatewayStrategy;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @AllArgsConstructor
+@Validated
 @RestController
 @RequestMapping("v1/payments")
 public class PaymentController {
@@ -44,7 +46,7 @@ public class PaymentController {
 
 
 
-        @PostMapping("/webhook/razorpay")
+    @PostMapping("/webhook/razorpay")
     public void handleStripeRazorpay(@RequestBody String payload,
                                      @RequestHeader("X-Razorpay-Signature") String signature) {
         log.info("Received Razorpay webhook: {}", payload);

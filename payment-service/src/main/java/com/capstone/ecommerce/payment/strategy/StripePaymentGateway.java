@@ -9,8 +9,10 @@ import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Event;
 
+import com.stripe.model.Refund;
 import com.stripe.model.checkout.Session;
 import com.stripe.net.Webhook;
+import com.stripe.param.RefundCreateParams;
 import com.stripe.param.checkout.SessionCreateParams;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -77,6 +79,39 @@ public class StripePaymentGateway implements PaymentGatewayStrategy {
             );
         } catch (StripeException e) {
             throw new PaymentLinkGenerationException(e);
+        }
+    }
+
+    @Override
+    public void refundPayment(String paymentIntentId) {
+        try {
+            RefundCreateParams params =
+                    RefundCreateParams.builder()
+                            .setPaymentIntent(paymentIntentId)
+                            .build();
+            var refund = Refund.create(params);
+            log.info("Refund successful for payment intent {}: {}", paymentIntentId, refund.getId());
+            // TODO: Notify customer about refund status via email/SMS using notification service
+        } catch (StripeException e) {
+            log.error("Error processing refund for payment intent {}: {}", paymentIntentId, e.getMessage());
+            throw new RuntimeException("Refund failed: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void partialRefund(String paymentIntentId, double amount) {
+        try {
+            RefundCreateParams params =
+                    RefundCreateParams.builder()
+                            .setPaymentIntent(paymentIntentId)
+                            .setAmount((long) (amount * 100)) // Convert to cents
+                            .build();
+            var refund = Refund.create(params);
+            log.info("Partial refund successful for payment intent {}: {}, Amount: {}", paymentIntentId, refund.getId(), amount);
+            // TODO: Notify customer about refund status via email/SMS using notification service
+        } catch (StripeException e) {
+            log.error("Error processing partial refund for payment intent {}: {}", paymentIntentId, e.getMessage());
+            throw new RuntimeException("Partial refund failed: " + e.getMessage());
         }
     }
 
