@@ -15,10 +15,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.math.BigDecimal;
 import java.util.Map;
 
 @Slf4j
+@Getter
 @RequiredArgsConstructor
 @Component(PaymentGatewayStrategy.PAYMENT_GATEWAY_RAZORPAY)
 public class RazorPayPaymentGateway implements PaymentGatewayStrategy {
@@ -42,17 +43,13 @@ public class RazorPayPaymentGateway implements PaymentGatewayStrategy {
 
 
     @Override
-    public PaymentLinkInfo createPaymentLink(String orderId, List<Item> items, String currency) throws PaymentLinkGenerationException {
+    public PaymentLinkInfo createPaymentLink(String orderId, BigDecimal amount, String currency) throws PaymentLinkGenerationException {
         try {
 
             RazorpayClient razorpay = new RazorpayClient(RAZORPAY_KEY, RAZORPAY_SECRET);
 
-            int amountInCents = items.stream()
-                    .mapToInt(item -> (int) (item.price() * item.quantity() * 100))
-                    .sum();
-
-            var request = new RazorPayPaymentLinkRequest.Builder(amountInCents)
-                    .currency("INR")
+            var request = new RazorPayPaymentLinkRequest.Builder(amount.multiply(BigDecimal.valueOf(100)).intValue()) // amount in paise
+                    .currency(currency)
                     .acceptPartial(false)
                     .expireBy(System.currentTimeMillis() / 1000 + 3600) // expires in 1 hour
                     .referenceId("TXN_" + System.currentTimeMillis())

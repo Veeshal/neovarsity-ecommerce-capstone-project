@@ -24,7 +24,7 @@ public class PaymentController {
         var paymentLinkInfo = paymentService.createPaymentLink(
                 request.gateway(),
                 request.orderId(),
-                request.items(),
+                request.amount(),
                 request.currency());
 
         return new PaymentLinkGenerateResponse(

@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Slf4j
@@ -38,32 +39,31 @@ public class StripePaymentGateway implements PaymentGatewayStrategy {
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    public PaymentLinkInfo createPaymentLink(String orderId, List<Item> items, String currency)
+    public PaymentLinkInfo createPaymentLink(String orderId, BigDecimal amount, String currency)
             throws PaymentLinkGenerationException {
 
         log.debug("Processing payment with Stripe...");
 
         try {
-
-            var lineItems = items.stream().map(s -> SessionCreateParams.LineItem.builder()
-                    .setQuantity((long) s.quantity())
+            var lineItem = SessionCreateParams.LineItem.builder()
+                    .setQuantity(1L)
                     .setPriceData(
                             SessionCreateParams.LineItem.PriceData.builder()
                                     .setCurrency(currency)
-                                    .setUnitAmount((long) (s.price() * 100)) // Convert to cents
+                                    .setUnitAmount((long) (amount.doubleValue() * 100)) // Convert to cents
                                     .setProductData(
                                             SessionCreateParams.LineItem.PriceData.ProductData.builder()
-                                                    .setName(s.itemName())
+                                                    .setName("Order " + orderId)
                                                     .build())
                                     .build())
-                    .build()).toList();
+                    .build();
 
             var sessionCreateParams = SessionCreateParams.builder()
                     .setMode(SessionCreateParams.Mode.PAYMENT)
                     .putMetadata("orderId", orderId)
                     .setSuccessUrl(REDIRECT_URL)
                     .setCancelUrl(REDIRECT_URL + "?canceled=true")
-                    .addAllLineItem(lineItems)
+                    .addLineItem(lineItem)
                     .build();
 
 

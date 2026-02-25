@@ -27,16 +27,10 @@ public class PaymentClient {
         String orderId = order.getOrderId().toString();
         String currency = "USD"; // Assuming USD for simplicity
         String gateway = payment.getCode();
-        List<Item> items = order.getItems().stream()
-                .map(item -> new Item(
-                        item.getProductName(),
-                        item.getQuantity(),
-                        item.getPrice().doubleValue()))
-                .toList();
 
         var request = new PaymentLinkGenerateRequest(
                 gateway,
-                items,
+                totalAmount,
                 currency,
                 orderId
         );

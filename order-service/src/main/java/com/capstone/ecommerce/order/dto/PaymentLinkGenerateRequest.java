@@ -1,10 +1,10 @@
 package com.capstone.ecommerce.order.dto;
 
-import java.util.List;
+import java.math.BigDecimal;
 
 public record PaymentLinkGenerateRequest(
     String gateway,
-    List<Item> items,
+    BigDecimal amount,
     String currency,
     String orderId
 ) {
