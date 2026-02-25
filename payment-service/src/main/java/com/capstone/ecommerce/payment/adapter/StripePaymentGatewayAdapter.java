@@ -1,6 +1,5 @@
-package com.capstone.ecommerce.payment.strategy;
+package com.capstone.ecommerce.payment.adapter;
 
-import com.capstone.ecommerce.payment.dto.Item;
 import com.capstone.ecommerce.payment.dto.PaymentEvent;
 import com.capstone.ecommerce.payment.dto.PaymentEventStatus;
 import com.capstone.ecommerce.payment.dto.PaymentLinkInfo;
@@ -21,12 +20,11 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
-@Component(PaymentGatewayStrategy.PAYMENT_GATEWAY_STRIPE)
-public class StripePaymentGateway implements PaymentGatewayStrategy {
+@Component(PaymentGatewayAdapter.PAYMENT_GATEWAY_STRIPE)
+public class StripePaymentGatewayAdapter implements PaymentGatewayAdapter {
 
     @Value("${ecom.stripe.webhook_secret}")
     private String WEBHOOK_SECRET;
@@ -165,3 +163,4 @@ public class StripePaymentGateway implements PaymentGatewayStrategy {
         }
     }
 }
+

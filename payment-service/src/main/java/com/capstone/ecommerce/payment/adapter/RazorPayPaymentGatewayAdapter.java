@@ -1,4 +1,4 @@
-package com.capstone.ecommerce.payment.strategy;
+package com.capstone.ecommerce.payment.adapter;
 
 import com.capstone.ecommerce.payment.dto.*;
 import com.capstone.ecommerce.payment.exceptions.PaymentLinkGenerationException;
@@ -21,8 +21,8 @@ import java.util.Map;
 @Slf4j
 @Getter
 @RequiredArgsConstructor
-@Component(PaymentGatewayStrategy.PAYMENT_GATEWAY_RAZORPAY)
-public class RazorPayPaymentGateway implements PaymentGatewayStrategy {
+@Component(PaymentGatewayAdapter.PAYMENT_GATEWAY_RAZORPAY)
+public class RazorPayPaymentGatewayAdapter implements PaymentGatewayAdapter {
 
     @Value("${ecom.razorpay.key}")
     private String RAZORPAY_KEY;
@@ -191,3 +191,4 @@ public class RazorPayPaymentGateway implements PaymentGatewayStrategy {
         }
     }
 }
+

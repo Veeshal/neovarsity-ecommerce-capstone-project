@@ -3,7 +3,7 @@ package com.capstone.ecommerce.payment.controller;
 import com.capstone.ecommerce.payment.dto.PaymentLinkGenerateRequest;
 import com.capstone.ecommerce.payment.dto.PaymentLinkGenerateResponse;
 import com.capstone.ecommerce.payment.service.PaymentService;
-import com.capstone.ecommerce.payment.strategy.PaymentGatewayStrategy;
+import com.capstone.ecommerce.payment.adapter.PaymentGatewayAdapter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -39,7 +39,7 @@ public class PaymentController {
     public void handleStripeWebhook(@RequestBody String payload,
                                     @RequestHeader("Stripe-Signature") String signature) {
         log.info("Received Stripe webhook: {}", payload);
-        paymentService.handleWebhook(PaymentGatewayStrategy.PAYMENT_GATEWAY_STRIPE, payload, signature);
+        paymentService.handleWebhook(PaymentGatewayAdapter.PAYMENT_GATEWAY_STRIPE, payload, signature);
     }
 
 
@@ -50,7 +50,7 @@ public class PaymentController {
     public void handleStripeRazorpay(@RequestBody String payload,
                                      @RequestHeader("X-Razorpay-Signature") String signature) {
         log.info("Received Razorpay webhook: {}", payload);
-        paymentService.handleWebhook(PaymentGatewayStrategy.PAYMENT_GATEWAY_RAZORPAY, payload, signature);
+        paymentService.handleWebhook(PaymentGatewayAdapter.PAYMENT_GATEWAY_RAZORPAY, payload, signature);
     }
 
 }

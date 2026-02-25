@@ -1,14 +1,11 @@
-package com.capstone.ecommerce.payment.strategy;
+package com.capstone.ecommerce.payment.adapter;
 
-import com.capstone.ecommerce.payment.dto.Item;
 import com.capstone.ecommerce.payment.dto.PaymentLinkInfo;
 import com.capstone.ecommerce.payment.exceptions.PaymentLinkGenerationException;
-import jakarta.servlet.http.HttpServletRequest;
 
 import java.math.BigDecimal;
-import java.util.List;
 
-public interface PaymentGatewayStrategy {
+public interface PaymentGatewayAdapter {
 
     String PAYMENT_GATEWAY_STRIPE = "stripe";
     String PAYMENT_GATEWAY_RAZORPAY = "razorpay";
@@ -21,3 +18,4 @@ public interface PaymentGatewayStrategy {
 
     void handleWebhook(String payload, String signature);
 }
+
