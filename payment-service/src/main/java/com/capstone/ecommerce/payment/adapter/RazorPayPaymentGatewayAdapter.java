@@ -2,6 +2,8 @@ package com.capstone.ecommerce.payment.adapter;
 
 import com.capstone.ecommerce.payment.dto.*;
 import com.capstone.ecommerce.payment.exceptions.PaymentLinkGenerationException;
+import com.capstone.ecommerce.payment.exceptions.RefundException;
+import com.capstone.ecommerce.payment.service.RazorPayWebhookService;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.razorpay.PaymentLink;
@@ -41,6 +43,8 @@ public class RazorPayPaymentGatewayAdapter implements PaymentGatewayAdapter {
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
+    private final RazorPayWebhookService webhookService;
+
 
     @Override
     public PaymentLinkInfo createPaymentLink(String orderId, BigDecimal amount, String currency) throws PaymentLinkGenerationException {
@@ -48,12 +52,14 @@ public class RazorPayPaymentGatewayAdapter implements PaymentGatewayAdapter {
 
             RazorpayClient razorpay = new RazorpayClient(RAZORPAY_KEY, RAZORPAY_SECRET);
 
-            var request = new RazorPayPaymentLinkRequest.Builder(amount.multiply(BigDecimal.valueOf(100)).intValue()) // amount in paise
+            int totalAmount = amount.multiply(BigDecimal.valueOf(100)).intValue();
+
+            var request = new RazorPayPaymentLinkRequest.Builder(totalAmount) // amount in paise
                     .currency(currency)
                     .acceptPartial(false)
                     .expireBy(System.currentTimeMillis() / 1000 + 3600) // expires in 1 hour
                     .referenceId("TXN_" + System.currentTimeMillis())
-                    .description("Payment for your order")
+                    .description("Payment for your order " + orderId)
                     .notes(Map.of(
                             "orderId", orderId
                     ))
@@ -73,8 +79,6 @@ public class RazorPayPaymentGatewayAdapter implements PaymentGatewayAdapter {
 
             PaymentLink paymentLink = razorpay.paymentLink.create(paymentLinkRequest);
 
-//            http://localhost:8080/payment/status?razorpay_payment_id=pay_SDJcUp47uQnR58&razorpay_payment_link_id=plink_SCm6Jgpsj2m5Ed&razorpay_payment_link_reference_id=TXN_1770362298666&razorpay_payment_link_status=paid&razorpay_signature=9eb8ff3262fbe23637266f253fcb0a5099eb41291dd03a55ea771412a7e49d22
-
             log.info(paymentLink.toJson().toString());
             var response = mapper.readValue(paymentLink.toJson().toString(), RazorPayPaymentLinkResponse.class);
             log.info("Parsed Razorpay response: {}", response);
@@ -91,42 +95,55 @@ public class RazorPayPaymentGatewayAdapter implements PaymentGatewayAdapter {
     }
 
     @Override
-    public void refundPayment(String paymentId) {
+    public void refundPayment(String orderId, String paymentId, String reason) {
         try {
             RazorpayClient razorpay = new RazorpayClient(RAZORPAY_KEY, RAZORPAY_SECRET);
 
             var refundRequest = new JSONObject()
                     .put("notes", new JSONObject()
-                            .put("reason", "Customer requested full refund"));
+                            .put("reason", reason)
+                            .put("orderId", orderId));
 
             var refund = razorpay.payments.refund(paymentId, refundRequest);
 
+            String refundId = refund.get("id");
+            String refundStatus = refund.get("status");
+            kafkaTemplate.send(PAYMENT_TOPIC, new PaymentEvent(orderId,
+                    paymentId, refundId, PaymentEventStatus.REFUND_INITIATED)
+            );
+
             log.info("Refund successful for payment ID: {}, Refund ID: {}", paymentId, refund.get("id"));
-            log.info("Refund details: {}", refund.toJson().toString());
-            // TODO: Notify customer about refund status via email/SMS using notification service
         } catch (Exception e) {
             log.error("Error initializing Razorpay client for refund: {}", e.getMessage(), e);
+            throw new RefundException(e.getMessage());
         }
     }
 
     @Override
-    public void partialRefund(String paymentId, double amount) {
+    public void partialRefund(String orderId, String paymentId, BigDecimal amount, String reason) {
         try {
 
             RazorpayClient razorpay = new RazorpayClient(RAZORPAY_KEY, RAZORPAY_SECRET);
+            int partialAmount = amount.multiply(BigDecimal.valueOf(100)).intValue();
 
             JSONObject refundRequest = new JSONObject()
-                    .put("amount", (int) (amount * 100)) // amount in paise
+                    .put("amount", Integer.toString(partialAmount)) // amount in paise
                     .put("notes", new JSONObject()
-                            .put("reason", "Customer requested partial refund"));
+                            .put("reason", reason)
+                            .put("orderId", orderId));
 
             var refund = razorpay.payments.refund(paymentId, refundRequest);
 
+            String refundId = refund.get("id");
+            String refundStatus = refund.get("status");
+
             log.info("Partial refund successful for payment ID: {}, Refund ID: {}, Amount: {}", paymentId, refund.get("id"), amount);
-            log.info("Refund details: {}", refund.toJson().toString());
-            // TODO: Notify customer about partial refund status via email/SMS using notification service
+            kafkaTemplate.send(PAYMENT_TOPIC, new PaymentEvent(orderId,
+                    paymentId, refundId, PaymentEventStatus.PARTIAL_REFUND_INITIATED)
+            );
         } catch (Exception e) {
             log.error("Error initializing Razorpay client for partial refund: {}", e.getMessage(), e);
+            throw new RefundException(e.getMessage());
         }
     }
 
@@ -149,41 +166,15 @@ public class RazorPayPaymentGatewayAdapter implements PaymentGatewayAdapter {
 
             // Step 3: Extract payment details based on event type
             JSONObject payloadObj = event.getJSONObject("payload");
-            if (payloadObj.has("payment_link")) {
-                JSONObject paymentLinkObj = payloadObj.getJSONObject("payment_link").getJSONObject("entity");
-                String paymentLinkId = paymentLinkObj.getString("id");
-                String status = paymentLinkObj.getString("status");
 
-                log.info("PaymentLink ID: {}", paymentLinkId);
-                log.info("Status: {}", status);
-
-                // Step 4: Handle business logic
-                if ("paid".equalsIgnoreCase(status)) {
-                    // Update order/payment record in your database
-                    log.info("Payment successful for link: {}", paymentLinkId);
-                } else if ("cancelled".equalsIgnoreCase(status)) {
-                    log.info("Payment link was cancelled.");
-                }
-            } else if (payloadObj.has("payment")) {
-                // Handle direct payment object (if using payment events)
-                JSONObject paymentObj = payloadObj.getJSONObject("payment").getJSONObject("entity");
-                String paymentId = paymentObj.getString("id");
-                String paymentStatus = paymentObj.getString("status");
-                String orderId = paymentObj.getJSONObject("notes").getString("orderId");
-
-                log.info("Payment ID: {}, Status: {}", paymentId, paymentStatus);
-                if ("captured".equalsIgnoreCase(paymentStatus)) {
-                    log.info("Payment captured successfully for payment ID: {}", paymentId);
-
-                    var paymentEvent = new PaymentEvent(orderId, paymentId, PaymentEventStatus.COMPLETED);
-                    kafkaTemplate.send(PAYMENT_TOPIC, paymentEvent);
-
-                } else if ("failed".equalsIgnoreCase(paymentStatus)) {
-                    log.info("Payment failed for payment ID: {}", paymentId);
-
-                    var paymentEvent = new PaymentEvent(orderId, paymentId, PaymentEventStatus.FAILED);
-                    kafkaTemplate.send(PAYMENT_TOPIC, paymentEvent);
-                }
+            if (webhookService.isPaymentEvent(eventType)) {
+                webhookService.processPayment(payloadObj);
+            } else if (webhookService.isRefundEvent(eventType)) {
+                webhookService.processRefund(payloadObj);
+            } else if (webhookService.isPaymentLinkEvent(eventType)) {
+                webhookService.processPaymentLink(payloadObj);
+            } else {
+                log.info("Unhandled event type: {}", eventType);
             }
 
         } catch (Exception e) {

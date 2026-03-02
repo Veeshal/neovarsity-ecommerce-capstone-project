@@ -4,6 +4,7 @@ import com.capstone.ecommerce.payment.dto.PaymentEvent;
 import com.capstone.ecommerce.payment.dto.PaymentEventStatus;
 import com.capstone.ecommerce.payment.dto.PaymentLinkInfo;
 import com.capstone.ecommerce.payment.exceptions.PaymentLinkGenerationException;
+import com.capstone.ecommerce.payment.exceptions.RefundException;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Event;
@@ -66,13 +67,12 @@ public class StripePaymentGatewayAdapter implements PaymentGatewayAdapter {
 
 
             var session = Session.create(sessionCreateParams);
-            var paymentIntentId = session.getPaymentIntent();
 
             return new PaymentLinkInfo(
                     session.getUrl(),
                     session.getExpiresAt(),
                     REDIRECT_URL,
-                    paymentIntentId,
+                    session.getId(),
                     orderId
             );
         } catch (StripeException e) {
@@ -81,35 +81,49 @@ public class StripePaymentGatewayAdapter implements PaymentGatewayAdapter {
     }
 
     @Override
-    public void refundPayment(String paymentIntentId) {
+    public void refundPayment(String orderId, String paymentId, String reason) {
         try {
             RefundCreateParams params =
                     RefundCreateParams.builder()
-                            .setPaymentIntent(paymentIntentId)
+                            .setPaymentIntent(paymentId)
+                            .setReason(RefundCreateParams.Reason.REQUESTED_BY_CUSTOMER)
+                            .putMetadata("orderId", orderId)
                             .build();
             var refund = Refund.create(params);
-            log.info("Refund successful for payment intent {}: {}", paymentIntentId, refund.getId());
-            // TODO: Notify customer about refund status via email/SMS using notification service
+            String refundId = refund.getId();
+            String refundStatus = refund.getStatus();
+            log.info("Refund successful for payment intent {}: {}", paymentId, refund.getId());
+            kafkaTemplate.send(PAYMENT_TOPIC, new PaymentEvent(orderId,
+                    paymentId, refundId, PaymentEventStatus.REFUND_INITIATED)
+            );
         } catch (StripeException e) {
-            log.error("Error processing refund for payment intent {}: {}", paymentIntentId, e.getMessage());
-            throw new RuntimeException("Refund failed: " + e.getMessage());
+            log.error("Error processing refund for payment intent {}: {}", paymentId, e.getMessage());
+            throw new RefundException("Refund failed: " + e.getMessage());
         }
     }
 
     @Override
-    public void partialRefund(String paymentIntentId, double amount) {
+    public void partialRefund(String orderId, String paymentId, BigDecimal amount, String reason) {
         try {
+
+            long totalAmount = amount.multiply(BigDecimal.valueOf(100)).longValue(); // Convert to cents
             RefundCreateParams params =
                     RefundCreateParams.builder()
-                            .setPaymentIntent(paymentIntentId)
-                            .setAmount((long) (amount * 100)) // Convert to cents
+                            .setPaymentIntent(paymentId)
+                            .setAmount(totalAmount) // Convert to cents
+                            .setReason(RefundCreateParams.Reason.REQUESTED_BY_CUSTOMER)
+                            .putMetadata("orderId", orderId)
                             .build();
             var refund = Refund.create(params);
-            log.info("Partial refund successful for payment intent {}: {}, Amount: {}", paymentIntentId, refund.getId(), amount);
-            // TODO: Notify customer about refund status via email/SMS using notification service
+            String refundId = refund.getId();
+            String refundStatus = refund.getStatus();
+            log.info("Partial refund successful for payment intent {}: {}, Amount: {}", paymentId, refund.getId(), amount);
+            kafkaTemplate.send(PAYMENT_TOPIC, new PaymentEvent(orderId,
+                    paymentId, refundId, PaymentEventStatus.PARTIAL_REFUND_INITIATED)
+            );
         } catch (StripeException e) {
-            log.error("Error processing partial refund for payment intent {}: {}", paymentIntentId, e.getMessage());
-            throw new RuntimeException("Partial refund failed: " + e.getMessage());
+            log.error("Error processing partial refund for payment intent {}: {}", paymentId, e.getMessage());
+            throw new RefundException("Partial refund failed: " + e.getMessage());
         }
     }
 
@@ -136,7 +150,8 @@ public class StripePaymentGatewayAdapter implements PaymentGatewayAdapter {
                         // e.g., use session.getCustomerDetails()
                         String orderId = session.getMetadata().get("orderId");
                         String paymentId = session.getPaymentIntent();
-                        var paymentEvent = new PaymentEvent(orderId, paymentId, PaymentEventStatus.COMPLETED);
+                        String paymentLinkId = session.getId();
+                        var paymentEvent = new PaymentEvent(orderId, paymentId, null, PaymentEventStatus.PAYMENT_LINK_PAID);
                         kafkaTemplate.send(PAYMENT_TOPIC, paymentEvent);
                     }
                     break;
@@ -147,11 +162,44 @@ public class StripePaymentGatewayAdapter implements PaymentGatewayAdapter {
                         // e.g., use session.getCustomerDetails()
                         String orderId = expired.getMetadata().get("orderId");
                         String paymentId = expired.getPaymentIntent();
-                        var paymentEvent = new PaymentEvent(orderId, paymentId, PaymentEventStatus.FAILED);
+                        var paymentEvent = new PaymentEvent(orderId, paymentId, null, PaymentEventStatus.PAYMENT_LINK_EXPIRED);
                         kafkaTemplate.send(PAYMENT_TOPIC, paymentEvent);
                     }
                     break;
-
+                case "refund.created":
+                    Refund refund = (Refund) event.getDataObjectDeserializer().getObject().orElse(null);
+                    if (refund != null) {
+                        log.info("Refund created: {}", refund.getId());
+                        String paymentId = refund.getPaymentIntent();
+                        String orderId = refund.getMetadata().get("orderId");
+                        String refundId = refund.getId();
+                        var paymentEvent = new PaymentEvent(orderId, paymentId, refundId, PaymentEventStatus.REFUND_INITIATED);
+                        kafkaTemplate.send(PAYMENT_TOPIC, paymentEvent);
+                    }
+                    break;
+                case "refund.updated":
+                    Refund updatedRefund = (Refund) event.getDataObjectDeserializer().getObject().orElse(null);
+                    if (updatedRefund != null) {
+                        log.info("Refund updated: {}", updatedRefund.getId());
+                        String paymentId = updatedRefund.getPaymentIntent();
+                        String orderId = updatedRefund.getMetadata().get("orderId");
+                        String refundId = updatedRefund.getId();
+                        PaymentEventStatus status = "succeeded".equalsIgnoreCase(updatedRefund.getStatus()) ? PaymentEventStatus.REFUND_COMPLETED : PaymentEventStatus.REFUND_FAILED;
+                        var paymentEvent = new PaymentEvent(orderId, paymentId, refundId, status);
+                        kafkaTemplate.send(PAYMENT_TOPIC, paymentEvent);
+                    }
+                    break;
+                case "refund.failed":
+                    Refund failedRefund = (Refund) event.getDataObjectDeserializer().getObject().orElse(null);
+                    if (failedRefund != null) {
+                        log.info("Refund failed: {}", failedRefund.getId());
+                        String paymentId = failedRefund.getPaymentIntent();
+                        String orderId = failedRefund.getMetadata().get("orderId");
+                        String refundId = failedRefund.getId();
+                        var paymentEvent = new PaymentEvent(orderId, paymentId, refundId, PaymentEventStatus.REFUND_FAILED);
+                        kafkaTemplate.send(PAYMENT_TOPIC, paymentEvent);
+                    }
+                    break;
                 default:
                     log.info("Unhandled event type: {}", event.getType());
             }

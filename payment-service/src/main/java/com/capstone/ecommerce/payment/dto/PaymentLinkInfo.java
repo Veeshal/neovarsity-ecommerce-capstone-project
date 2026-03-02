@@ -4,7 +4,7 @@ public record PaymentLinkInfo(
     String link,
     long expiresAt,
     String redirectUrl,
-    String paymentId,
+    String paymentLinkId,
     String orderId
 ) {
 }

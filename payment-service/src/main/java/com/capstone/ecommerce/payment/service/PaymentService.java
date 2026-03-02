@@ -21,6 +21,20 @@ public class PaymentService {
         return adapter.createPaymentLink(orderId, amount, currency);
     }
 
+    public void refundPayment(String paymentGateway, String orderId, String paymentId, String reason, BigDecimal amount, boolean isFullRefund) {
+        PaymentGatewayAdapter adapter = paymentGatewayAdapters.get(paymentGateway);
+        if (adapter == null) {
+            throw new IllegalArgumentException("Unsupported payment gateway: " + paymentGateway);
+        }
+
+        if (isFullRefund) {
+            adapter.refundPayment(orderId, paymentId, reason);
+        } else {
+            adapter.partialRefund(orderId, paymentId, amount, reason);
+        }
+    }
+
+
     public void handleWebhook(String paymentGateway, String payload, String signature) {
         PaymentGatewayAdapter adapter = paymentGatewayAdapters.get(paymentGateway);
         if (adapter == null) {

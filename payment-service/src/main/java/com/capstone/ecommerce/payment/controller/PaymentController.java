@@ -2,8 +2,10 @@ package com.capstone.ecommerce.payment.controller;
 
 import com.capstone.ecommerce.payment.dto.PaymentLinkGenerateRequest;
 import com.capstone.ecommerce.payment.dto.PaymentLinkGenerateResponse;
+import com.capstone.ecommerce.payment.dto.RefundRequest;
 import com.capstone.ecommerce.payment.service.PaymentService;
 import com.capstone.ecommerce.payment.adapter.PaymentGatewayAdapter;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -19,7 +21,7 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @PostMapping
-    public PaymentLinkGenerateResponse createPaymentLink(@RequestBody PaymentLinkGenerateRequest request) {
+    public PaymentLinkGenerateResponse createPaymentLink(@Valid @RequestBody PaymentLinkGenerateRequest request) {
         log.info("Creating payment link for request: {}", request);
         var paymentLinkInfo = paymentService.createPaymentLink(
                 request.gateway(),
@@ -31,8 +33,20 @@ public class PaymentController {
                 paymentLinkInfo.link(),
                 paymentLinkInfo.expiresAt(),
                 paymentLinkInfo.redirectUrl(),
-                paymentLinkInfo.paymentId(),
+                paymentLinkInfo.paymentLinkId(),
                 paymentLinkInfo.orderId());
+    }
+
+    @PostMapping("refund")
+    public void refundPayment(@Valid @RequestBody RefundRequest request) {
+        paymentService.refundPayment(
+                request.gateway(),
+                request.orderId(),
+                request.paymentId(),
+                request.reason(),
+                request.amount(),
+                request.isFullRefund()
+        );
     }
 
     @PostMapping("/webhook/stripe")

@@ -12,9 +12,9 @@ public interface PaymentGatewayAdapter {
 
     PaymentLinkInfo createPaymentLink(String orderId, BigDecimal amount, String currency) throws PaymentLinkGenerationException;
 
-    void refundPayment(String paymentId);
+    void refundPayment(String orderId, String paymentId, String reason);
 
-    void partialRefund(String paymentId, double amount);
+    void partialRefund(String orderId, String paymentId, BigDecimal amount, String reason);
 
     void handleWebhook(String payload, String signature);
 }
