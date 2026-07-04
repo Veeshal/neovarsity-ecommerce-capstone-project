@@ -18,3 +18,20 @@
 1. Handles user registration, login, profile management, and password reset.
 2. Uses MySQL as the primary database for structured user data.
 3. Uses Kafka to communicate relevant user activities to other services (e.g., a new user registration event can trigger welcome emails or offers).
+
+
+## Environment Variables
+| Variable             | Description                                                                       |
+|----------------------|-----------------------------------------------------------------------------------|
+| AUTH_JWK_ISSUER_URI  | The URI of the JSON Web Key Set (JWK) issuer for validating JWT tokens.           |
+| GOOGLE_CLIENT_IDENTIFIER | The client identifier for Google OAuth2 authentication. |
+| TOKEN_DURATION_IN_SECONDS | The duration (in seconds) for which the JWT token remains valid. |
+| KAFKA_BOOTSTRAP_SERVERS | The bootstrap servers for connecting to the Kafka cluster.                        |
+| KAFKA_TRUSTSTORE_PATH | The file path to the Kafka truststore for SSL connections.                        |
+| KAFKA_KEYSTORE_PATH  | The file path to the Kafka keystore for SSL connections.                          |
+| DB_HOST             | The hostname of the database server used by the Product Service.             |
+| DB_PORT             | The port number of the database server used by the Product Service.          |
+| DB_NAME             | The name of the database used by the Product Service.                        |
+| DB_USERNAME         | The username for authenticating with the database used by the Product Service. |
+| DB_PASSWORD         | The password for authenticating with the database used by the Product Service.|
+

@@ -1,7 +1,5 @@
 ecom:
   google.client_id: ${GOOGLE_CLIENT_IDENTIFIER:000000000000-00000000000.apps.googleusercontent.com}
-  meta.client_id: ${META_CLIENT_IDENTIFIER:000000000000-00000000000}
-  microsoft.client_id: ${MICROSOFT_CLIENT_IDENTIFIER:000000000000-00000000000}
   token_duration: ${TOKEN_DURATION_IN_SECONDS:86400}
   kafka:
     topics:
@@ -39,7 +37,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${AUTH_ISSUER_URI:http://localhost:8000}
+#          issuer-uri: ${AUTH_ISSUER_URI:http://localhost:8000}
           jwk-set-uri: ${AUTH_JWK_ISSUER_URI:http://localhost:8000/user-service/api}/.well-known/jwks.json
   jackson:
     default-property-inclusion: non_null

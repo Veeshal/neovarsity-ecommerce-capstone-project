@@ -22,10 +22,6 @@ public class PaymentEventListener {
         if (event.status() == PaymentEventStatus.PAYMENT_LINK_PAID) {
             log.info("Payment completed for order id: {}", event.orderId());
             orderService.placeOrder(event.orderId());
-        } else {
-            // TODO: Implement payment failure & refund handling logic
-            log.warn("Payment failed for order id: {}", event.orderId());
         }
-
     }
 }

@@ -47,11 +47,11 @@ public class CartItemController {
         return cartService.updateCartItem(userId, request.productId(), request.quantity());
     }
 
-    @DeleteMapping
-    public Cart deleteCartItem(@AuthenticationPrincipal Jwt jwt, @RequestBody CartItemRequest request) {
-        log.debug("Delete cart item: {}", request);
+    @DeleteMapping("{productId}")
+    public Cart deleteCartItem(@AuthenticationPrincipal Jwt jwt, Long productId) {
+        log.debug("Delete cart item: {}", productId);
         Long userId = jwt.getClaim(USER_ID_CLAIM);
-        return cartService.deleteCartItem(userId, request.productId());
+        return cartService.deleteCartItem(userId, productId);
     }
 
 

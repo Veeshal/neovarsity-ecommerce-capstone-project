@@ -4,31 +4,18 @@
 - [ ] user-registered-topic
 - [x] password-reset-topic
   * User Service emits this event when a user requests a password reset.
-  * Notification Service listens to this topic to send a password reset email.
-
-## Cart Events
-- [ ] cart-item-added-topic
-- [ ] cart-item-removed-topic, 
-- [ ] cart-cleared-topic
-
-## Product Events
-- [ ] product-added-topic
-- [ ] product-updated-topic, 
-- [ ] product-deleted-topic, 
-- [ ] product-stock-updated-topic
+  * User Service generates a password reset token and includes it in the event.
+  * User Service emits the event after updating the user's password reset token in the database.
+  * Notification Service listens to this topic to send a password reset email to the user with the reset token.
+  * Notification Service notifies the user about the password reset request completion.
 
 ## Order Events
-
 - [x] order-placed-topic
+  * Order Management Service emits this event when an order is placed.
   * Cart Service listens to this topic to clear the cart after an order is placed.
-- [ ] order-cancelled-topic
-- [ ] order-shipped-topic
-- [ ] order-delivered-topic
-
+  * Notification Service listens to this topic to send order confirmation emails.
+  
 ## Payment Events
-- [ ] payment-success-topic
-- [ ] payment-failure-topic
-
-## Notification Events
-- [ ] notification-sent-topic
-- [ ] notification-failed-topic
+- [x] payment-topic
+  * Emitted when a payment is successful, failed, or refunded.
+  * Order Management Service listens to this topic to update order status accordingly.

@@ -34,7 +34,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${AUTH_ISSUER_URI:http://localhost:8000}
+#          issuer-uri: ${AUTH_ISSUER_URI:http://localhost:8000}
           jwk-set-uri: ${AUTH_JWK_ISSUER_URI:http://localhost:8000/user-service/api}/.well-known/jwks.json
   datasource:
     url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:ecom-notification}?useSSL=false&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true

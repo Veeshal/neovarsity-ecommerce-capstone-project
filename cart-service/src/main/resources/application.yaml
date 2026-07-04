@@ -17,7 +17,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${AUTH_ISSUER_URI:http://localhost:8000}
+#          issuer-uri: ${AUTH_ISSUER_URI:http://localhost:8000}
           jwk-set-uri: ${AUTH_JWK_ISSUER_URI:http://localhost:8000/user-service/api}/.well-known/jwks.json
   data:
     mongodb:
@@ -91,6 +91,12 @@ spring:
   config:
     activate:
       on-profile: local
+  data:
+    mongodb:
+      protocol: mongodb
+    redis:
+      ssl:
+        enabled: off
   kafka:
     properties:
       security.protocol: PLAINTEXT
